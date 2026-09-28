@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using IOPath = System.IO.Path;
 using File = System.IO.File;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -40,7 +41,7 @@ public sealed class RhythiansMapInfo
 public static class RhythiansApi
 {
 	private const string BaseUrl = "https://www.rhythians.com/api/rhythkit/";
-	private static readonly string AuthPath = Path.Combine(OS.GetUserDataDir(), "rhythians-auth.json");
+	private static readonly string AuthPath = IOPath.Combine(OS.GetUserDataDir(), "rhythians-auth.json");
 	private static readonly HttpClient Client = new HttpClient { BaseAddress = new Uri(BaseUrl), Timeout = TimeSpan.FromSeconds(60) };
 	private static readonly object CatalogLock = new object();
 	private static readonly Dictionary<string, RhythiansMapInfo> Catalog = new Dictionary<string, RhythiansMapInfo>(StringComparer.OrdinalIgnoreCase);
@@ -285,8 +286,8 @@ public static class RhythiansApi
 	private static bool EnsureMapDownloaded(string id)
 	{
 		var safe = Sanitize(id);
-		var sspmPath = Global.MapPath.PlusFile("rhythians_" + safe + ".sspm");
-		var vulPath = Global.MapPath.PlusFile("rhythians_" + safe + ".vul");
+		var sspmPath = Global.MapIOPath.PlusFile("rhythians_" + safe + ".sspm");
+		var vulPath = Global.MapIOPath.PlusFile("rhythians_" + safe + ".vul");
 		if (File.Exists(sspmPath) || File.Exists(vulPath))
 			return false;
 		using (var request = CreateRequest(HttpMethod.Get, "maps/" + Uri.EscapeDataString(id) + "/download"))
@@ -393,7 +394,7 @@ public static class RhythiansApi
 
 	private static string Sanitize(string value)
 	{
-		foreach (var invalid in Path.GetInvalidFileNameChars())
+		foreach (var invalid in IOPath.GetInvalidFileNameChars())
 			value = value.Replace(invalid, '_');
 		return value;
 	}
