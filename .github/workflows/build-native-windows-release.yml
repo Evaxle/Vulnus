@@ -50,6 +50,11 @@ jobs:
           }
           Get-ChildItem $dest | Select-Object -ExpandProperty Name
 
+      - name: Install software OpenGL for Godot
+        uses: f3d-app/install-mesa-windows-action@v3
+        with:
+          path: ${{ runner.temp }}\godot\Godot_v3.7-dev1_mono_win64
+
       - name: Export playable Windows x64 build
         shell: pwsh
         run: |
