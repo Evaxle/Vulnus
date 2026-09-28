@@ -55,6 +55,23 @@ jobs:
         with:
           path: ${{ runner.temp }}\godot\Godot_v3.7-dev1_mono_win64
 
+      - name: Build C# solution with Godot
+        shell: pwsh
+        run: |
+          $stdout = "$env:RUNNER_TEMP\godot-build-out.log"
+          $stderr = "$env:RUNNER_TEMP\godot-build-err.log"
+          $arguments = "--no-window --verbose --path `"$env:GITHUB_WORKSPACE`" --build-solutions"
+          $process = Start-Process -FilePath $env:GODOT_BIN -ArgumentList $arguments -PassThru -NoNewWindow -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+          if (-not $process.WaitForExit(180000)) {
+            Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+            Get-Content $stdout -ErrorAction SilentlyContinue
+            Get-Content $stderr -ErrorAction SilentlyContinue
+            throw "Godot C# build timed out after 180 seconds."
+          }
+          Get-Content $stdout -ErrorAction SilentlyContinue
+          Get-Content $stderr -ErrorAction SilentlyContinue
+          if ($process.ExitCode -ne 0) { throw "Godot C# build failed with exit code $($process.ExitCode)" }
+
       - name: Export playable Windows x64 build
         shell: pwsh
         run: |
@@ -64,7 +81,13 @@ jobs:
           $stderr = "$env:RUNNER_TEMP\godot-export-err.log"
           New-Item -ItemType Directory -Force -Path $build | Out-Null
           $arguments = "--no-window --verbose --path `"$env:GITHUB_WORKSPACE`" --export `"Windows Desktop`" `"$exe`""
-          $process = Start-Process -FilePath $env:GODOT_BIN -ArgumentList $arguments -Wait -PassThru -NoNewWindow -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+          $process = Start-Process -FilePath $env:GODOT_BIN -ArgumentList $arguments -PassThru -NoNewWindow -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+          if (-not $process.WaitForExit(240000)) {
+            Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+            Get-Content $stdout -ErrorAction SilentlyContinue
+            Get-Content $stderr -ErrorAction SilentlyContinue
+            throw "Godot export timed out after 240 seconds."
+          }
           Get-Content $stdout -ErrorAction SilentlyContinue
           Get-Content $stderr -ErrorAction SilentlyContinue
           if ($process.ExitCode -ne 0) { throw "Godot export failed with exit code $($process.ExitCode)" }
