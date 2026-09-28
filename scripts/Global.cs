@@ -7,7 +7,6 @@ public class Global : Node
 	public static string MapPath = OS.GetUserDataDir().PlusFile("maps");
 
 	public static Global Instance;
-	public static Discord.DiscordW Discord;
 	public static Texture Matt;
 	public Node CurrentScene { get; private set; }
 	public Control Overlay { get; private set; }
@@ -17,8 +16,6 @@ public class Global : Node
 		if (!System.IO.Directory.Exists(MapPath))
 			System.IO.Directory.CreateDirectory(MapPath);
 		Instance = this;
-		Discord = new Discord.DiscordW();
-		Discord.SetActivity(new Discord.ActivityW());
 	}
 	public override void _Ready()
 	{
@@ -42,7 +39,6 @@ public class Global : Node
 	{
 		if (Input.IsActionJustPressed("fullscreen"))
 			OS.WindowFullscreen = !OS.WindowFullscreen;
-		Discord.RunCallbacks();
 	}
 	public void AddOverlay()
 	{
