@@ -1,0 +1,346 @@
+78098b89c88a74ebe8c20117b8754620
+::res://::1790629216
+changelog.txt::TextFile::-1::1790629109::0::1::::<><><>0<>0<><>::
+doorstop_config.ini::TextFile::-1::1790629109::0::1::::<><><>0<>0<><>::
+settings.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+::res://addons/::1790629108
+::res://addons/godot-openxr/::1790629109
+CHANGES.md::TextFile::-1::1790629108::0::1::::<><><>0<>0<><>::
+icon.png::CompressedTexture2D::6025732033506294846::1790629109::1790629219::1::::<><><>0<>0<>31718bf748b85dc65b0c9511c6539de8<>res://.godot/imported/icon.png-d1e33d334833c02eab7a46a8de24d243.ctex::
+plugin.cfg::TextFile::-1::1790629109::0::1::::<><><>0<>0<><>::
+plugin.gd::GDScript::1903949862229733345::1790629109::0::1::::<>RefCounted<><>0<>0<><>::
+README.md::TextFile::-1::1790629108::0::1::::<><><>0<>0<><>::
+runtimes.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+::res://addons/godot-openxr/bin/::1790629109
+::res://addons/godot-openxr/bin/android/::1790629109
+::res://addons/godot-openxr/bin/linux/::1790629109
+::res://addons/godot-openxr/bin/win64/::1790629109
+::res://addons/godot-openxr/config/::1790629109
+::res://addons/godot-openxr/editor/::1790629109
+OpenXRRunSelect.gd::GDScript::1901242550436453983::1790629109::0::1::::<>RefCounted<><>0<>0<><>::
+OpenXRRunSelect.tscn::PackedScene::-1::1790629109::0::1::::<><><>0<>0<><>::res://addons/godot-openxr/editor/OpenXRRunSelect.gd
+::res://addons/godot-openxr/scenes/::1790629109
+bone_material.tres::StandardMaterial3D::-1::1790629109::0::1::::<><><>0<>0<><>::
+center_ball_material.tres::StandardMaterial3D::-1::1790629109::0::1::::<><><>0<>0<><>::
+controller.gd::GDScript::6909946786963243210::1790629109::0::1::::<>ARVRController<><>0<>0<><>::
+first_person_controller_vr.gd::GDScript::6798949665692007593::1790629109::0::1::::<>RefCounted<><>0<>0<><>::
+first_person_controller_vr.tscn::PackedScene::-1::1790629109::0::1::::<><><>0<>0<><>::res://addons/godot-openxr/scenes/first_person_controller_vr.gd<>res://addons/godot-openxr/scenes/controller.gd<>res://addons/godot-openxr/config/OpenXRConfig.gdns
+hand_mesh.gd::GDScript::2997277026198967869::1790629109::0::1::::<>RefCounted<><>0<>0<><>::
+hand_nodes.gd::GDScript::1554035766126742987::1790629109::0::1::::<>Spatial<><>0<>0<><>::
+left_hand_nodes.tscn::PackedScene::-1::1790629109::0::1::::<><><>0<>0<><>::res://addons/godot-openxr/scenes/center_ball_material.tres<>res://addons/godot-openxr/config/OpenXRHand.gdns<>res://addons/godot-openxr/scenes/left_hand_material.tres<>res://addons/godot-openxr/scenes/bone_material.tres<>res://addons/godot-openxr/scenes/hand_nodes.gd
+right_hand_nodes.tscn::PackedScene::-1::1790629109::0::1::::<><><>0<>0<><>::res://addons/godot-openxr/scenes/center_ball_material.tres<>res://addons/godot-openxr/scenes/hand_nodes.gd<>res://addons/godot-openxr/scenes/right_hand_material.tres<>res://addons/godot-openxr/scenes/bone_material.tres<>res://addons/godot-openxr/config/OpenXRHand.gdns
+visualise_bounds.gd::GDScript::9192439006317686571::1790629109::0::1::::<>Spatial<><>0<>0<><>::
+visualise_bounds.gdshader::Shader::7496358135778910247::1790629109::0::1::::<><><>0<>0<><>::
+visualise_bounds.tscn::PackedScene::-1::1790629109::0::1::::<><><>0<>0<><>::res://addons/godot-openxr/scenes/visualise_bounds.gd<>res://addons/godot-openxr/scenes/visualise_bounds.gdshader
+XRPose.tscn::PackedScene::-1::1790629109::0::1::::<><><>0<>0<><>::res://addons/godot-openxr/config/OpenXRPose.gdns
+::res://assets/::1790629109
+audiobus.tres::AudioBusLayout::-1::1790629109::0::1::::<><><>0<>0<><>::
+cursor.png::CompressedTexture2D::5191830197352261629::1790629109::1790629219::1::::<><><>0<>0<>d93ad48286c010ede678efb96f955985<>res://.godot/imported/cursor.png-224f93d013e0812359a323dac1948615.ctex::
+::res://assets/backgrounds/::1790629109
+animegril.jpg::CompressedTexture2D::469846236249263507::1790629109::1790629219::1::::<><><>0<>0<>fad2c9e7dd2e55d26d35d9284df9c6ac<>res://.godot/imported/animegril.jpg-cdb2bb535ba299495ccd17696ed28196.ctex::
+awesomeassstreet.jpg::CompressedTexture2D::1341418372484846255::1790629109::1790629219::1::::<><><>0<>0<>f34abf33682c101d40f4e9d56b80ae4b<>res://.godot/imported/awesomeassstreet.jpg-9157d85f96eef3c5d30a8504d5d408b2.ctex::
+coffee.jpg::CompressedTexture2D::2843823985219613149::1790629109::1790629219::1::::<><><>0<>0<>5e0ae180e42f6657a93b319737746e41<>res://.godot/imported/coffee.jpg-937bfbf086e2a7bf6f8806e4d7ea1d8e.ctex::
+coolcity.jpg::CompressedTexture2D::2718553956334422944::1790629109::1790629219::1::::<><><>0<>0<>f0494f1709c37a1e0eded08534773ab4<>res://.godot/imported/coolcity.jpg-032029c715225cbbcfe1c75db977f6fd.ctex::
+flyingship.jpg::CompressedTexture2D::6372684472556368728::1790629109::1790629219::1::::<><><>0<>0<>92c28ee095d90a1a6d13551fa55957ab<>res://.godot/imported/flyingship.jpg-dd62e21888bf43328e67670c17cc0da1.ctex::
+funnyasstree.jpg::CompressedTexture2D::6405595714963810006::1790629109::1790629221::1::::<><><>0<>0<>aa84375321579811c38de47064f8c591<>res://.godot/imported/funnyasstree.jpg-a0dbe6dd3fac08e113449680786b54d9.ctex::
+skyclouds.jpg::CompressedTexture2D::5596770032788891254::1790629109::1790629219::1::::<><><>0<>0<>7361f7c574978a0bb45e799d0c4059aa<>res://.godot/imported/skyclouds.jpg-a294b46e45291dd026efe4d583b64bfc.ctex::
+sunset.png::CompressedTexture2D::4904017388996028732::1790629109::1790629220::1::::<><><>0<>0<>2d021e83c2da78f729bad4c08bb6e1f2<>res://.godot/imported/sunset.png-084d70e10450d314e29f65c6e276c47b.ctex::
+treewithswing.jpg::CompressedTexture2D::928348551961356002::1790629109::1790629219::1::::<><><>0<>0<>81acf9faaf27d53578e1772d54979732<>res://.godot/imported/treewithswing.jpg-d7615c50d3606c2b967e5aa4b5a92253.ctex::
+::res://assets/environments/::1790629109
+Environment.tres::Environment::-1::1790629109::0::1::::<><><>0<>0<><>::
+::res://assets/fonts/::1790629109
+::res://assets/fonts/SourceSansPro/::1790629109
+SourceSansPro-Black.ttf::FontFile::1334824434673762698::1790629109::1790629218::1::::<><><>0<>0<>2d7b7e90bffe12c14ffa8bd0dfc11a13<>res://.godot/imported/SourceSansPro-Black.ttf-92e1923d4dec8241775b9f2adbe10ba4.fontdata::
+SourceSansPro-BlackItalic.ttf::FontFile::8606667693101832828::1790629109::1790629218::1::::<><><>0<>0<>f1df8d9353cef523b8d9d3d5ac375567<>res://.godot/imported/SourceSansPro-BlackItalic.ttf-4ddcd03862e085489f44c7baf376a4ea.fontdata::
+SourceSansPro-Bold.ttf::FontFile::5642037284650851498::1790629109::1790629218::1::::<><><>0<>0<>3355c648fcffec2300b760298995d792<>res://.godot/imported/SourceSansPro-Bold.ttf-7f2077c19821bee1c11cae7d98f4d6c0.fontdata::
+SourceSansPro-BoldItalic.ttf::FontFile::988312767602910245::1790629109::1790629218::1::::<><><>0<>0<>f5dced7fbb79176debd7af02fd4d9e6d<>res://.godot/imported/SourceSansPro-BoldItalic.ttf-d210cd3d4b7f46ad0c607e252d16fada.fontdata::
+SourceSansPro-ExtraLight.ttf::FontFile::8455686935443626444::1790629109::1790629218::1::::<><><>0<>0<>49d933d36ba2129e36748f6faa144563<>res://.godot/imported/SourceSansPro-ExtraLight.ttf-7924f70ef105e95a699c06e9f965c424.fontdata::
+SourceSansPro-ExtraLightItalic.ttf::FontFile::4055397341418369033::1790629109::1790629218::1::::<><><>0<>0<>6003fbed103f52f970f83592d29734e0<>res://.godot/imported/SourceSansPro-ExtraLightItalic.ttf-f56342edfe5470b5bf0b8299d1eabab4.fontdata::
+SourceSansPro-It.ttf::FontFile::935839961966588889::1790629109::1790629218::1::::<><><>0<>0<>6c22896696fd7a92fa7cc575f537b229<>res://.godot/imported/SourceSansPro-It.ttf-623683cb4936e3b25e170dffb15574f0.fontdata::
+SourceSansPro-Italic.ttf::FontFile::4296291332614279092::1790629109::1790629218::1::::<><><>0<>0<>4e138e0b366774d69ff2c479d9e470df<>res://.godot/imported/SourceSansPro-Italic.ttf-24ad9056a8ac1ab2b90c970b1691c32f.fontdata::
+SourceSansPro-Light.ttf::FontFile::5988194319330854521::1790629109::1790629218::1::::<><><>0<>0<>44035bb6999c97b80e277a7b9b0777d2<>res://.godot/imported/SourceSansPro-Light.ttf-3bcb15d1ab054a64b4da7c89150a5f61.fontdata::
+SourceSansPro-LightItalic.ttf::FontFile::5277641628021660618::1790629109::1790629218::1::::<><><>0<>0<>baca2fbaee8c1c269b7a1c7f75f9ab58<>res://.godot/imported/SourceSansPro-LightItalic.ttf-a84106562fbc30d9b2c65b4a5127c81a.fontdata::
+SourceSansPro-Regular.ttf::FontFile::3525182655712284618::1790629109::1790629218::1::::<><><>0<>0<>f37f63c8c79d6491aed4a53744063d30<>res://.godot/imported/SourceSansPro-Regular.ttf-75137e4eb9491504640dd6f9663087d0.fontdata::
+SourceSansPro-Semibold.ttf::FontFile::121563410030035380::1790629109::1790629218::1::::<><><>0<>0<>7268c583c8ade30c57be45a8e7446f21<>res://.godot/imported/SourceSansPro-Semibold.ttf-23c0f87114febca83eb833ed881416a5.fontdata::
+SourceSansPro-SemiBoldItalic.ttf::FontFile::1770060542545619418::1790629109::1790629218::1::::<><><>0<>0<>e9cafcd11007dcf8532c8967711f0d0f<>res://.godot/imported/SourceSansPro-SemiBoldItalic.ttf-0087551a6ca62bab64d2335c50d8b6c9.fontdata::
+::res://assets/images/::1790629109
+account.png::CompressedTexture2D::2449917421579591929::1790629109::1790629218::1::::<><><>0<>0<>6d389475d7f446571e1652dcd549016e<>res://.godot/imported/account.png-68a4ccf56f214b9af329ef37971983f5.ctex::
+beatgamedev.png::CompressedTexture2D::9118059773453010833::1790629109::1790629218::1::::<><><>0<>0<>a1c72ca18fb8268a5e3ae1c06e119de6<>res://.godot/imported/beatgamedev.png-148e88a7ae4747315c0f4b768f6888f8.ctex::
+loading.png::CompressedTexture2D::257613689835780752::1790629109::1790629218::1::::<><><>0<>0<>be776bc2fe1e5ff012a0348fbb418c81<>res://.godot/imported/loading.png-632d520dd9bd4463bef1db99049b8908.ctex::
+matt.jpg::CompressedTexture2D::6749965214743228295::1790629109::1790629218::1::::<><><>0<>0<>f7bee38c034aa5f9ace99b1549495c31<>res://.godot/imported/matt.jpg-85dd6f7fba3e1a2c1356484fa1590114.ctex::
+play.png::CompressedTexture2D::3871995321376187207::1790629109::1790629218::1::::<><><>0<>0<>783e20b695d1378cbbccebde048ec38d<>res://.godot/imported/play.png-103002be68228936cbc0bcee22a95529.ctex::
+settings.png::CompressedTexture2D::4248592357771062530::1790629109::1790629218::1::::<><><>0<>0<>1f9266432a682fd08b3e1a601beeae65<>res://.godot/imported/settings.png-56fcbab19c17f8b56002bc8e3ce43bfa.ctex::
+soundspaceplus.png::CompressedTexture2D::8090992717037720201::1790629109::1790629218::1::::<><><>0<>0<>fa22cc13a1d9199fe6156743db4d6cd0<>res://.godot/imported/soundspaceplus.png-6b9cb1ee9eb95b71aed37557818b0e64.ctex::
+vulnus.ico::OtherFile::-1::1790629109::0::1::::<><><>0<>0<><>::
+vulnus.png::CompressedTexture2D::8841558193558864530::1790629109::1790629219::1::::<><><>0<>0<>e6198f12262d7c6a6822d1849284682d<>res://.godot/imported/vulnus.png-3bd94597fdb3e317d20c44f9b16648ce.ctex::
+::res://assets/shaders/::1790629109
+mask.gdshader::Shader::159928348634739979::1790629109::0::1::::<><><>0<>0<><>::
+::res://assets/skin/::1790629109
+Block.obj::Mesh::3595536267098674667::1790629109::1790629221::1::::<><><>0<>0<>e49b10425d0ba14b654564de5980263c<>res://.godot/imported/Block.obj-ace0e6cce512028a9c0803ae6419e8ee.mesh<*>res://.godot/imported/Block.obj-ace0e6cce512028a9c0803ae6419e8ee.mesh::
+cursor.png::CompressedTexture2D::5642185424754491124::1790629109::1790629219::1::::<><><>0<>0<>2c27a10f588649b982072325f7f8204a<>res://.godot/imported/cursor.png-e9f87fc5c877037c65d8562a3035bb82.ctex::
+grid.png::CompressedTexture2D::2036838554934194034::1790629109::1790629219::1::::<><><>0<>0<>63d894e419aad380aa243b96824c62ef<>res://.godot/imported/grid.png-ffe221fd62382835f5b11fb96a439d78.ctex::
+grid_minimal.png::CompressedTexture2D::195906494052576458::1790629109::1790629219::1::::<><><>0<>0<>eb3ea6affcb5a4deb90e43556dfdd935<>res://.godot/imported/grid_minimal.png-e0b6c26ece167e52f7ab33477959ea5c.ctex::
+progress.png::CompressedTexture2D::8837692276316043592::1790629109::1790629219::1::::<><><>0<>0<>8ac9394d258a7cda22d06963be053a8e<>res://.godot/imported/progress.png-21beaaa20ab1e4ba73c5503ef706c257.ctex::
+::res://assets/themes/::1790629109
+Menu.tres::Theme::-1::1790629109::0::1::::<><><>0<>0<><>::res://assets/fonts/SourceSansPro/SourceSansPro-Regular.ttf
+::res://BepInEx/::1790629108
+::res://BepInEx/core/::1790629108
+BepInEx.Core.xml::TextFile::-1::1790629108::0::1::::<><><>0<>0<><>::
+BepInEx.Preloader.Core.xml::TextFile::-1::1790629108::0::1::::<><><>0<>0<><>::
+BepInEx.Preloader.Unity.xml::TextFile::-1::1790629108::0::1::::<><><>0<>0<><>::
+BepInEx.Unity.xml::TextFile::-1::1790629108::0::1::::<><><>0<>0<><>::
+::res://Logs/::1790629108
+AssetImportWorker0-prev.log::TextFile::-1::1790629108::0::1::::<><><>0<>0<><>::
+AssetImportWorker0.log::TextFile::-1::1790629108::0::1::::<><><>0<>0<><>::
+AssetImportWorker1-prev.log::TextFile::-1::1790629108::0::1::::<><><>0<>0<><>::
+AssetImportWorker1.log::TextFile::-1::1790629108::0::1::::<><><>0<>0<><>::
+Packages-Update.log::TextFile::-1::1790629108::0::1::::<><><>0<>0<><>::
+shadercompiler-AssetImportWorker0.log::TextFile::-1::1790629108::0::1::::<><><>0<>0<><>::
+shadercompiler-UnityShaderCompiler.exe0.log::TextFile::-1::1790629108::0::1::::<><><>0<>0<><>::
+::res://maps/::1790629110
+::res://maps/666/::1790629109
+converted.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+cover.png::CompressedTexture2D::6393842590594228376::1790629109::1790629219::1::::<><><>0<>0<>27c5595437f2c26405d0c40c363a21f8<>res://.godot/imported/cover.png-4e0417d284364500ee9dbb7d60c3c892.ctex::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+yt5s.com - RoughSketch - 666 (128 kbps).mp3::AudioStreamMP3::6517454295587064706::1790629109::1790629218::1::::<><><>0<>0<>af6b1ec8b9d00179a66d7d62238e913a<>res://.godot/imported/yt5s.com - RoughSketch - 666 (128 kbps).mp3-9908a46d3cc01205b4abfd4bcc4da628.mp3str::
+::res://maps/-45 - G e n g a o z o (INNOCENT NOIZE_s -Noice of Nocent- remix)/::1790629109
+5809325003.mp3::AudioStreamMP3::9075544241886110010::1790629109::1790629218::0::::<><><>0<>0<>f545cf2ca2544b735d2290fea74f51a9<>::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+official.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+::res://maps/Aaron Smith - Dancin (KRONO Remix) Brazilian Portugese Cover/::1790629109
+2351332739.mp3::AudioStreamMP3::2346192508944872260::1790629109::1790629218::1::::<><><>0<>0<>b6762743ed1ff7255121a6a27ffdcd62<>res://.godot/imported/2351332739.mp3-fc1ba65e387684cb724562ee94c77237.mp3str::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+official.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+::res://maps/Aekhlorią - Before The End/::1790629109
+5630117178.mp3::AudioStreamMP3::7299109112782026631::1790629109::1790629218::0::::<><><>0<>0<>a1c6e2869ef3fd02ab284e0c029cd981<>::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+official.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+::res://maps/Aeswa - Killer/::1790629109
+2286046454.mp3::AudioStreamMP3::3437433214262389770::1790629109::1790629218::1::::<><><>0<>0<>269dfac73075952a93e1cd311426dcca<>res://.godot/imported/2286046454.mp3-7e99c0979faa58eacb14e489eb9a7a6b.mp3str::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+official.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+::res://maps/astra - butane/::1790629110
+butane.mp3::AudioStreamMP3::6614447819424498596::1790629110::1790629218::1::::<><><>0<>0<>a8e4f2bbf6644eef2b656948e1612c2a<>res://.godot/imported/butane.mp3-efb5329b4e9b845a7edaefe6815fd119.mp3str::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+official.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+::res://maps/azers ill/::1790629110
+AlbumArtSmall.jpg::CompressedTexture2D::249527079264362158::1790629110::1790629219::1::::<><><>0<>0<>a9ee0a40ce6f6acdd9820a8a78cd405e<>res://.godot/imported/AlbumArtSmall.jpg-fee89bdbff812011d4473ce4cc2373c2.ctex::
+converted.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+DJ Myosuke - Ill.mp3::AudioStreamMP3::5614036366138209344::1790629110::1790629218::0::::<><><>0<>0<>e13650417239e9eda0845cd575ebc3d8<>::
+DJ_Myosuke_-_Ill_(getmp3.pro).mp3::AudioStreamMP3::5356305138639084679::1790629110::1790629218::1::::<><><>0<>0<>1ffd864d4adb2ba8518dc144f1047e32<>res://.godot/imported/DJ_Myosuke_-_Ill_(getmp3.pro).mp3-8843c7f2d2972c227f81b1c4596cc448.mp3str::
+Folder.jpg::CompressedTexture2D::8353966683568872209::1790629110::1790629219::1::::<><><>0<>0<>10879103cfd0415aaa7258f5ff886780<>res://.godot/imported/Folder.jpg-205d2407f1aaaacdf707668c6fef8d43.ctex::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+::res://maps/azers ill/azers ill/::1790629110
+converted.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+DJ Myosuke - Ill.mp3::AudioStreamMP3::8830261826701093710::1790629110::1790629218::0::::<><><>0<>0<>9b98cab39b25e7a7cc7d2f79e3564f21<>::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+::res://maps/be_my_extratone/::1790629110
+converted.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+cover.jpg::CompressedTexture2D::44133451656064203::1790629110::1790629219::1::::<><><>0<>0<>9a17ba503d86e1c54c8139b91c546943<>res://.godot/imported/cover.jpg-1d84889809bc8a521320f1da20190d4b.ctex::
+DJKurara-Be-My-Extratone.ogg::AudioStreamOggVorbis::1601929912679963070::1790629110::1790629218::1::::<><><>0<>0<>f8fef1b27d435524aed4a0f19507ba99<>res://.godot/imported/DJKurara-Be-My-Extratone.ogg-01a8d40fedb507444238a721f9e2d239.oggvorbisstr::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+::res://maps/bill wurtz - i don_t wanna go to school/::1790629110
+592906411.mp3::AudioStreamMP3::4668012282424596374::1790629110::1790629218::1::::<><><>0<>0<>edfd9b2ffe394a205da938d717e2577a<>res://.godot/imported/592906411.mp3-74090e70e8ef4375bb5a70deaac43c83.mp3str::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+official.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+::res://maps/Bossfight - Okiba Crackdown/::1790629109
+2587275169.mp3::AudioStreamMP3::3975556756597684657::1790629109::1790629218::1::::<><><>0<>0<>994b40c1ccf34d28dcd77315d65ec671<>res://.godot/imported/2587275169.mp3-80a078815732655d6960fd77c5d7d83a.mp3str::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+official.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+::res://maps/Camellia - GHOST/::1790629109
+Camellia - Ghost.mp3::AudioStreamMP3::5298241218732492541::1790629109::1790629218::1::::<><><>0<>0<>6b161a1523d3cd646287cee04a789c6d<>res://.godot/imported/Camellia - Ghost.mp3-9e7b8321472e9f81bc7069c190ee725b.mp3str::
+cover.png::CompressedTexture2D::1428136353008917211::1790629109::1790629219::0::::<><><>0<>0<>be69d45cd338d0877e2ecfe305ded1d2<>::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+ss.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+::res://maps/Camellia - Speed Star Kanade/::1790629109
+823062320.mp3::AudioStreamMP3::5555718610233287522::1790629109::1790629218::1::::<><><>0<>0<>fa03a0232ee97b55022b77eab693b62b<>res://.godot/imported/823062320.mp3-f37762966677806af8e94876940fcf42.mp3str::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+official.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+::res://maps/Camellia_-_Bleed_Blood/::1790629109
+AlbumArtSmall.jpg::CompressedTexture2D::5401872105629817906::1790629109::1790629219::1::::<><><>0<>0<>3311c4e78e66e68677fd72becf23e981<>res://.godot/imported/AlbumArtSmall.jpg-bf377d9537a4c578c00c77340f20eaa2.ctex::
+Camellia - [BLEED BLOOD].mp3::AudioStreamMP3::6690593366096178816::1790629109::1790629218::1::::<><><>0<>0<>bd8b0f72245be5342548f1de557a8407<>res://.godot/imported/Camellia - [BLEED BLOOD].mp3-7cc6e55944e8fc092cb02bf4fda61307.mp3str::
+converted.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+Folder.jpg::CompressedTexture2D::6893305921850724647::1790629109::1790629219::1::::<><><>0<>0<>bbea4f22cadab836c87c7d98b376386f<>res://.godot/imported/Folder.jpg-28da625b8c2a8fb438e88428a44b4000.ctex::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+::res://maps/Camellia_-_Hello_BPM_2021/::1790629109
+AlbumArtSmall.jpg::CompressedTexture2D::7559763842731313028::1790629109::1790629219::1::::<><><>0<>0<>9b620eeef71582dde4cb0c1148958a9d<>res://.godot/imported/AlbumArtSmall.jpg-3429df23815bafa5cab01de4c0e8ffd8.ctex::
+Camellia_-_Hello_BPM_2021_(getmp3.pro).mp3::AudioStreamMP3::5162250897599372962::1790629109::1790629218::1::::<><><>0<>0<>6784f6fcd5a2736f582c509706e2aca6<>res://.godot/imported/Camellia_-_Hello_BPM_2021_(getmp3.pro).mp3-826ee5ee607cf591bf7d8a01275a7a7d.mp3str::
+converted.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+cover.jpg::CompressedTexture2D::8372170922475797234::1790629109::1790629219::0::::<><><>0<>0<>fa3da01bb1e0ce8f4cbe151572a2939d<>::
+Folder.jpg::CompressedTexture2D::5381068152399847176::1790629109::1790629219::1::::<><><>0<>0<>f5fb77bb4f98c731e7da820bdec80bb5<>res://.godot/imported/Folder.jpg-76971a1d9c0fc210ef640f481b4c26fc.ctex::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+::res://maps/Camellia___GHOST/::1790629109
+Camellia _ GHOST.mp3::AudioStreamMP3::2338950437530465486::1790629109::1790629218::1::::<><><>0<>0<>b81ed4261a85b318bc875c76ecbbe246<>res://.godot/imported/Camellia _ GHOST.mp3-27377017728070b4fce6ccbc3347d624.mp3str::
+converted.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+cover.png::CompressedTexture2D::6276741775665600228::1790629109::1790629219::1::::<><><>0<>0<>42e7d266bf65be9bed7e55ff1cf09f29<>res://.godot/imported/cover.png-8b45655099584c078cb0fdf2b8ec4b60.ctex::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+::res://maps/Celestial Scars/::1790629109
+converted.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+ZirconEscalus_-_Celestial_Scars_Sp_(getmp3.pro).mp3::AudioStreamMP3::8214424702507376509::1790629109::1790629218::1::::<><><>0<>0<>1bca3d3d594df74c13f25c361a8d78aa<>res://.godot/imported/ZirconEscalus_-_Celestial_Scars_Sp_(getmp3.pro).mp3-95f546dd5568c10221f831c0a910a29e.mp3str::
+::res://maps/Countdown 321/::1790629109
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+ss.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+tpazolite_-_Countdown_321_TPZREMA_(getmp3.pro).mp3::AudioStreamMP3::6507858251181449117::1790629109::1790629218::1::::<><><>0<>0<>21111d919446b7efb732f8aca714c5d9<>res://.godot/imported/tpazolite_-_Countdown_321_TPZREMA_(getmp3.pro).mp3-812e6bcea535a0e033ecc5cb438c18c7.mp3str::
+::res://maps/Dark_Star/::1790629109
+AlbumArtSmall.jpg::CompressedTexture2D::5976195010967270574::1790629109::1790629219::1::::<><><>0<>0<>db6db1a0f6035faaf4a829bb0c568dfa<>res://.godot/imported/AlbumArtSmall.jpg-f20fcb2de03f659c056815df34146abf.ctex::
+converted.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+Dark_Star_after_dark_x_smash_mouth_(getmp3.pro).mp3::AudioStreamMP3::1858240413767597652::1790629109::1790629218::1::::<><><>0<>0<>ada1866e0b63801db9cd45e40ac902d5<>res://.godot/imported/Dark_Star_after_dark_x_smash_mouth_(getmp3.pro).mp3-726f340ce4f23641e8c88ee6fc0fca60.mp3str::
+Folder.jpg::CompressedTexture2D::3583049572069546339::1790629109::1790629219::1::::<><><>0<>0<>0831c06a14c4c2996228fb56939359a6<>res://.godot/imported/Folder.jpg-13fd2feb0fc951077821819d6ce7ee39.ctex::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+::res://maps/Fight For The Present/::1790629109
+converted.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+cover.png::CompressedTexture2D::2766738289867566022::1790629109::1790629218::0::::<><><>0<>0<>ca18dccfe0b7791eb2e625fe1863ecaa<>::
+for_the_present.mp3::AudioStreamMP3::6754817450198254537::1790629109::1790629218::1::::<><><>0<>0<>4957cf8fb58d73909ca4982ffe522776<>res://.godot/imported/for_the_present.mp3-0af91b54774a0e9f29f70ca022657a29.mp3str::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+::res://maps/Galaxy Quest/::1790629109
+360366727.mp3::AudioStreamMP3::196267824210098248::1790629109::1790629218::1::::<><><>0<>0<>01039115b158107cc265431d00141390<>res://.godot/imported/360366727.mp3-a3d1294e633e8e1b935d09ba7f7e2cfd.mp3str::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+official.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+::res://maps/Hold Angel/::1790629109
+converted.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+cover.jpg::CompressedTexture2D::3215616275762143780::1790629109::1790629218::1::::<><><>0<>0<>531d78af1a2604ca89cc506137652385<>res://.godot/imported/cover.jpg-21b8eaa5ac08b916d661256cd3adfced.ctex::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+You_-_Hold_Angel_(getmp3.pro).mp3::AudioStreamMP3::5595614708600055927::1790629109::1790629218::1::::<><><>0<>0<>7631939dc7f229db6df1f9c62f27d5d0<>res://.godot/imported/You_-_Hold_Angel_(getmp3.pro).mp3-1cf2383c2eda562f3815fe6fdd92002c.mp3str::
+::res://maps/intercosmic_echo/::1790629110
+converted.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+y2mate.com - Speedcore Intercosmic Echo.mp3::AudioStreamMP3::7566197623181520419::1790629110::1790629218::1::::<><><>0<>0<>28379eca2f5f65be8ff24365df719306<>res://.godot/imported/y2mate.com - Speedcore Intercosmic Echo.mp3-41dc09672618a33cd99a6e405b09c40d.mp3str::
+::res://maps/Kumo No Kireme/::1790629109
+Kobaryo_-_Kumo_No_Kireme_feat__(getmp3.pro).mp3::AudioStreamMP3::8680821123077702184::1790629109::1790629218::1::::<><><>0<>0<>58b44e80a8bac0237f896ff1722a5f01<>res://.godot/imported/Kobaryo_-_Kumo_No_Kireme_feat__(getmp3.pro).mp3-2606bec4226af88e345be9e5a08db53d.mp3str::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+ss.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+::res://maps/Kurokotei _ Galaxy Collapse _Full_/::1790629109
+3401292474.mp3::AudioStreamMP3::7654695221641767421::1790629109::1790629218::1::::<><><>0<>0<>d6dba2843c283f6a7166abddd8aa91b1<>res://.godot/imported/3401292474.mp3-b770cf11e0efd8c983e5e43eaa7152ea.mp3str::
+cover.jpg::CompressedTexture2D::485447624176568599::1790629109::1790629218::1::::<><><>0<>0<>304d0a447748b5897eb5ec6161e97f9c<>res://.godot/imported/cover.jpg-a84d626f3650c610bfa5c4b446fbd962.ctex::
+meta.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+official.json::JSON::-1::1790629109::0::1::::<><><>0<>0<><>::
+::res://maps/Lowermost Revolt/::1790629110
+Camellia_-_Lowermost_revolt_Jerem_(getmp3.pro).mp3::AudioStreamMP3::7675933056354219789::1790629110::1790629218::1::::<><><>0<>0<>1f6cbac33c49dcfdf87e60007fff0ae4<>res://.godot/imported/Camellia_-_Lowermost_revolt_Jerem_(getmp3.pro).mp3-8e48d1bfe0f2e9b1d6201d8f6e35307d.mp3str::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+ss.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+::res://maps/Magical Sanctuary/::1790629110
+12 Magical Sanctuary.mp3::AudioStreamMP3::5229936399304306942::1790629110::1790629218::1::::<><><>0<>0<>25b4e7f29bf026e4174aca4cbd6b50e2<>res://.godot/imported/12 Magical Sanctuary.mp3-8512ead8e507d718a7346d0465e7d6b5.mp3str::
+converted.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+::res://maps/monoqlom - On the beach/::1790629110
+AlbumArtSmall.jpg::CompressedTexture2D::3638309477005381226::1790629110::1790629218::1::::<><><>0<>0<>d86afc632a0e09cf3f23af109cab3695<>res://.godot/imported/AlbumArtSmall.jpg-23dc55a00661b36c82a5d7351ac0966f.ctex::
+converted.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+cover.png::CompressedTexture2D::8020239660707125345::1790629110::1790629218::1::::<><><>0<>0<>9920dd223ad75889846d3194c074860a<>res://.godot/imported/cover.png-1d9a37122918c6d23822efe326b8a35a.ctex::
+Folder.jpg::CompressedTexture2D::8832284812723742732::1790629110::1790629218::1::::<><><>0<>0<>f03b511509680b8694ed7b019ba3d662<>res://.godot/imported/Folder.jpg-62b55b5199933ee00ad991ccc472b3f5.ctex::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+On the beach.mp3::AudioStreamMP3::3984641077498257488::1790629110::1790629218::1::::<><><>0<>0<>bdd302de28f9838d2c8e072eb7ca26f1<>res://.godot/imported/On the beach.mp3-36cc734e89d0d72e6fb4dcbe4d6f9cc3.mp3str::
+::res://maps/monoqlom _ Aremite/::1790629110
+Aremite.mp3::AudioStreamMP3::3033905396125552649::1790629110::1790629218::1::::<><><>0<>0<>38d1ac1ad0d996da16c79f22bc038ab6<>res://.godot/imported/Aremite.mp3-fd53a9ebf55b81758932b4cee6cf612b.mp3str::
+converted.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+cover.png::CompressedTexture2D::1927944594718596924::1790629110::1790629218::1::::<><><>0<>0<>735e3895733cb240dd6a679bc7ab95e8<>res://.godot/imported/cover.png-c056490da32c7b95ac5ebe5153e6cb20.ctex::
+cut.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+::res://maps/monoqlom _ Blackout/::1790629110
+Blackout.mp3::AudioStreamMP3::8939745161734259332::1790629110::1790629218::1::::<><><>0<>0<>3263b8317d5793d7c0222d709b36f73e<>res://.godot/imported/Blackout.mp3-90f883450d742b1c70cfcf57c6165068.mp3str::
+converted.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+cover.png::CompressedTexture2D::6342922341822460026::1790629110::1790629218::1::::<><><>0<>0<>b755c61be9f4727bb20624aef88602d4<>res://.godot/imported/cover.png-ca81af49eee924912da1e3460cc19aa6.ctex::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+::res://maps/monoqlom _ Cut it out/::1790629110
+converted.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+cover.png::CompressedTexture2D::6010984264569417883::1790629110::1790629218::1::::<><><>0<>0<>c1fa50486e8881918cffe8ed3fffd281<>res://.godot/imported/cover.png-69b5bb0afc27627bed75a463e909749f.ctex::
+Cut it out.mp3::AudioStreamMP3::8207724027621851391::1790629110::1790629218::1::::<><><>0<>0<>a06d15db6d60fb641d879d3d17fe1e48<>res://.godot/imported/Cut it out.mp3-1542dbf87624abe07f87154427034e41.mp3str::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+::res://maps/monoqlom _ Hailing/::1790629110
+converted.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+cover.png::CompressedTexture2D::7827082918278828723::1790629110::1790629218::1::::<><><>0<>0<>8e977fb6f772675c551bb6a696c18ae8<>res://.godot/imported/cover.png-42783816af0cf4e565f81487c022e6af.ctex::
+cut.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+hailing.mp3::AudioStreamMP3::7360330046325275707::1790629110::1790629218::1::::<><><>0<>0<>d9217d749e7650e3c6de3e499ffb9227<>res://.godot/imported/hailing.mp3-89aad9de94fc48bad271ca5afc7dbe98.mp3str::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+::res://maps/monoqlom _ Scenic beauty/::1790629110
+converted.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+cover.png::CompressedTexture2D::856468074315688750::1790629110::1790629218::1::::<><><>0<>0<>8f62c32bf9baf8a40ba0c663f3750cbc<>res://.godot/imported/cover.png-82ee649828c66605a85dc8c905c2a3a7.ctex::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+Scenic beauty.mp3::AudioStreamMP3::7878286302960034759::1790629110::1790629218::1::::<><><>0<>0<>c03f4fe71ebcdfad98bc2e6b63c9b5fe<>res://.godot/imported/Scenic beauty.mp3-37c1387c0f20e15894d2cf471dd5fa78.mp3str::
+::res://maps/monoqlom _ to Another Place/::1790629110
+converted.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+cover.png::CompressedTexture2D::976849275030622382::1790629110::1790629218::1::::<><><>0<>0<>13be4654875192cc788cfc4dedf1b6b1<>res://.godot/imported/cover.png-e0c8337e48ad44851c36f42387132c13.ctex::
+cut.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+to Another Place.mp3::AudioStreamMP3::1479059318307596841::1790629110::1790629218::1::::<><><>0<>0<>c887e5508474412af66a7385cc720ecf<>res://.godot/imported/to Another Place.mp3-3eb916e9a88cb732ed79f24e014c60bb.mp3str::
+::res://maps/monoqlom _ toAnotherBlackedOutTwilight/::1790629110
+converted.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+cover.png::CompressedTexture2D::6148652841929136362::1790629110::1790629218::1::::<><><>0<>0<>c6bb448ce02863c3dff8bcc55aba51b9<>res://.godot/imported/cover.png-29afb22cb298f0fd2e494109d03d5f27.ctex::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+toanotherblackedouttwilight.mp3::AudioStreamMP3::9004479899426498507::1790629110::1790629218::1::::<><><>0<>0<>c4a44e892a29582688759bd38c377a05<>res://.godot/imported/toanotherblackedouttwilight.mp3-8a36d84372633adf33a0a246ca2762cd.mp3str::
+::res://maps/monoqlom _ Twilight/::1790629110
+converted.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+cover.png::CompressedTexture2D::414168817714343446::1790629110::1790629218::1::::<><><>0<>0<>e14331288f7ce4ea48e5e5245de9b0d5<>res://.godot/imported/cover.png-7f5f033c91c35dca6b1fa739172660b8.ctex::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+Twilight.mp3::AudioStreamMP3::7470922662936767413::1790629110::1790629218::1::::<><><>0<>0<>9237286274d7671201915b01f766d7ca<>res://.godot/imported/Twilight.mp3-161dcc86d913d601e7e744ebec4bf810.mp3str::
+::res://maps/Rhyme_Buster/::1790629110
+Buster Nalmi - Rhyme Buster.mp3::AudioStreamMP3::3871414313374576766::1790629110::1790629218::1::::<><><>0<>0<>e67a796426f088bdaee28bd7173415a5<>res://.godot/imported/Buster Nalmi - Rhyme Buster.mp3-b8ad203c240e40fecee5e969c516ddbd.mp3str::
+converted.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+cover.jpg::CompressedTexture2D::6854591867517754559::1790629110::1790629218::1::::<><><>0<>0<>ec1553062200f4fea7bd9c25f09fc468<>res://.godot/imported/cover.jpg-3a963e4cc010d4d9d9135d5b97890f07.ctex::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+::res://maps/When I use it/::1790629110
+Buster_Nalmi_-_When_I_use_it_(getmp3.pro).mp3::AudioStreamMP3::975570132700237697::1790629110::1790629218::1::::<><><>0<>0<>668279abff3c86ea11165bf8bc7959be<>res://.godot/imported/Buster_Nalmi_-_When_I_use_it_(getmp3.pro).mp3-1901868bad28894f425a479d89cdabe5.mp3str::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+ss.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+::res://maps/xi_-_FREEDOM_DiVE/::1790629110
+592222839.mp3::AudioStreamMP3::3560150521637302405::1790629110::1790629218::1::::<><><>0<>0<>dc08065445486bc29997ab1bb341e4a2<>res://.godot/imported/592222839.mp3-9f4ead55d0c2362b2b0f5101bf7a481d.mp3str::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+official.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+::res://maps/xi_-_FREEDOM_DiVE_tpz_Overcute_Remix/::1790629110
+1973190958.mp3::AudioStreamMP3::1203137346748271136::1790629110::1790629218::1::::<><><>0<>0<>ba131641798fd3e251feb3b622d9ae14<>res://.godot/imported/1973190958.mp3-aacaf89f4b1da5e9c9e2cec71064e003.mp3str::
+cover.png::CompressedTexture2D::3817026926126977090::1790629110::1790629218::1::::<><><>0<>0<>e5190b8cdf26a441e3104e9c0ddfcf9e<>res://.godot/imported/cover.png-87b538cb0fd6c0b0b39dd76d197158a3.ctex::
+meta.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+official.json::JSON::-1::1790629110::0::1::::<><><>0<>0<><>::
+::res://Packages/::1790629108
+manifest.json::JSON::-1::1790629108::0::1::::<><><>0<>0<><>::
+packages-lock.json::JSON::-1::1790629108::0::1::::<><><>0<>0<><>::
+::res://prefabs/::1790629110
+::res://prefabs/hud/::1790629110
+Health.tscn::PackedScene::-1::1790629110::0::1::::<><><>0<>0<><>::res://scripts/gameplay/hud/Health.cs
+LeftPanel.tscn::PackedScene::-1::1790629110::0::1::::<><><>0<>0<><>::res://scripts/gameplay/hud/LeftPanel.cs<>res://assets/fonts/SourceSansPro/SourceSansPro-Bold.ttf<>res://assets/fonts/SourceSansPro/SourceSansPro-Semibold.ttf
+RightPanel.tscn::PackedScene::-1::1790629110::0::1::::<><><>0<>0<><>::res://scripts/gameplay/hud/RightPanel.cs<>res://assets/skin/progress.png<>res://assets/fonts/SourceSansPro/SourceSansPro-Bold.ttf<>res://assets/fonts/SourceSansPro/SourceSansPro-Semibold.ttf
+::res://prefabs/menu/::1790629110
+MapList.tscn::PackedScene::-1::1790629110::0::1::::<><><>0<>0<><>::res://scripts/menu/components/maps/MapList.cs<>res://assets/themes/Menu.tres<>res://assets/fonts/SourceSansPro/SourceSansPro-Semibold.ttf<>res://assets/images/matt.jpg<>res://scripts/menu/components/maps/MapsetButton.cs<>res://assets/fonts/SourceSansPro/SourceSansPro-Regular.ttf<>res://assets/shaders/mask.gdshader
+::res://ProjectSettings/::1790629108
+ProjectVersion.txt::TextFile::-1::1790629108::0::1::::<><><>0<>0<><>::
+::res://scenes/::1790629110
+Game.tscn::PackedScene::-1::1790629110::0::1::::<><><>0<>0<><>::res://assets/skin/Block.obj<>res://scripts/gameplay/GameCamera.cs<>res://assets/skin/cursor.png<>res://scripts/gameplay/Game.cs<>res://assets/skin/grid_minimal.png<>res://scripts/gameplay/managers/NoteManager.cs<>res://scripts/gameplay/managers/NoteRenderer.cs<>res://scripts/gameplay/managers/SyncManager.cs<>res://scripts/gameplay/managers/HUDManager.cs<>res://prefabs/hud/LeftPanel.tscn<>res://prefabs/hud/RightPanel.tscn<>res://scripts/gameplay/EnvironmentEffects.cs<>res://prefabs/hud/Health.tscn
+MainMenu.tscn::PackedScene::-1::1790629110::0::1::::<><><>0<>0<><>::res://assets/fonts/SourceSansPro/SourceSansPro-Semibold.ttf<>res://assets/images/play.png<>res://assets/images/account.png<>res://assets/images/settings.png<>res://assets/images/matt.jpg<>res://assets/themes/Menu.tres<>res://assets/fonts/SourceSansPro/SourceSansPro-Bold.ttf<>res://scripts/menu/MainMenu.cs<>res://assets/images/vulnus.png<>res://scripts/menu/MenuHandler.cs<>res://scripts/menu/Singleplayer.cs<>res://prefabs/menu/MapList.tscn<>res://scripts/menu/components/maps/MapDetails.cs<>res://scripts/menu/components/Backgrounds.cs<>res://scripts/menu/Results.cs<>res://assets/images/loading.png<>res://assets/shaders/mask.gdshader<>res://assets/fonts/SourceSansPro/SourceSansPro-Regular.ttf
+Overlay.tscn::PackedScene::-1::1790629110::0::1::::<><><>0<>0<><>::res://scenes/overlays/Debug.tscn<>res://scripts/overlay/Fade.cs<>res://scenes/overlays/Options.tscn<>res://assets/fonts/SourceSansPro/SourceSansPro-Semibold.ttf<>res://assets/images/beatgamedev.png
+Startup.tscn::PackedScene::-1::1790629110::0::1::::<><><>0<>0<><>::res://assets/images/vulnus.png<>res://assets/fonts/SourceSansPro/SourceSansPro-Semibold.ttf<>res://scripts/Startup.cs
+VR.tscn::PackedScene::-1::1790629110::0::1::::<><><>0<>0<><>::res://scenes/MainMenu.tscn
+::res://scenes/overlays/::1790629110
+Debug.tscn::PackedScene::-1::1790629110::0::1::::<><><>0<>0<><>::res://assets/fonts/SourceSansPro/SourceSansPro-Regular.ttf<>res://assets/fonts/SourceSansPro/SourceSansPro-Semibold.ttf<>res://scripts/overlay/Debug.cs
+Options.tscn::PackedScene::-1::1790629110::0::1::::<><><>0<>0<><>::res://assets/images/settings.png<>res://assets/fonts/SourceSansPro/SourceSansPro-Regular.ttf<>res://assets/fonts/SourceSansPro/SourceSansPro-Semibold.ttf<>res://scripts/menu/Options.cs<>res://assets/themes/Menu.tres<>res://scripts/menu/components/classes/Slider.cs<>res://scripts/menu/components/options/Volume.cs<>res://scripts/menu/components/classes/Dropdown.cs<>res://scripts/menu/components/classes/DecimalInput.cs<>res://scripts/menu/components/options/CameraSettings.cs<>res://scripts/menu/components/options/Approach.cs<>res://scripts/menu/components/options/RenderSettings.cs<>res://scripts/menu/components/options/PostSettings.cs
+::res://scripts/::1790629110
+::res://scripts/compatibility/::1790629110
+::res://scripts/compatibility/old/::1790629110
+::res://scripts/compatibility/ssplus/::1790629110
+::res://scripts/content/::1790629110
+::res://scripts/content/beatmap/::1790629110
+::res://scripts/gameplay/::1790629110
+::res://scripts/gameplay/hud/::1790629110
+::res://scripts/gameplay/managers/::1790629110
+::res://scripts/gameplay/mods/::1790629110
+::res://scripts/integration/::1790629110
+::res://scripts/menu/::1790629110
+::res://scripts/menu/components/::1790629110
+::res://scripts/menu/components/classes/::1790629110
+::res://scripts/menu/components/maps/::1790629110
+::res://scripts/menu/components/options/::1790629110
+::res://scripts/online/::1790629110
+::res://scripts/overlay/::1790629110
+::res://scripts/utility/::1790629110
+::res://templates/::1790629110
+::res://Universal Rhythia Map Converter/::1790629108
+::res://UserSettings/::1790629108
+::res://UserSettings/Layouts/::1790629108
+::res://Vulnus_Data/::1790629108
+RuntimeInitializeOnLoads.json::JSON::-1::1790629108::0::1::::<><><>0<>0<><>::
+ScriptingAssemblies.json::JSON::-1::1790629108::0::1::::<><><>0<>0<><>::
+::res://Vulnus_Data/il2cpp_data/::1790629108
+::res://Vulnus_Data/il2cpp_data/Metadata/::1790629108
+::res://Vulnus_Data/il2cpp_data/Resources/::1790629108
+::res://Vulnus_Data/Plugins/::1790629108
+::res://Vulnus_Data/Plugins/x86_64/::1790629108
+::res://Vulnus_Data/Resources/::1790629108
