@@ -53,11 +53,18 @@ jobs:
       - name: Export playable Windows x64 build
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path "$env:GITHUB_WORKSPACE\build" | Out-Null
-          & $env:GODOT_BIN --path $env:GITHUB_WORKSPACE --export "Windows Desktop" "$env:GITHUB_WORKSPACE\build\Vulnus.exe"
-          if ($LASTEXITCODE -ne 0) { throw "Godot export failed with exit code $LASTEXITCODE" }
-          if (-not (Test-Path "$env:GITHUB_WORKSPACE\build\Vulnus.exe")) { throw "Vulnus.exe was not created." }
-          Get-ChildItem "$env:GITHUB_WORKSPACE\build" -Recurse | Select-Object FullName,Length
+          $build = "$env:GITHUB_WORKSPACE\build"
+          $exe = "$build\Vulnus.exe"
+          $stdout = "$env:RUNNER_TEMP\godot-export-out.log"
+          $stderr = "$env:RUNNER_TEMP\godot-export-err.log"
+          New-Item -ItemType Directory -Force -Path $build | Out-Null
+          $arguments = "--no-window --verbose --path `"$env:GITHUB_WORKSPACE`" --export `"Windows Desktop`" `"$exe`""
+          $process = Start-Process -FilePath $env:GODOT_BIN -ArgumentList $arguments -Wait -PassThru -NoNewWindow -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+          Get-Content $stdout -ErrorAction SilentlyContinue
+          Get-Content $stderr -ErrorAction SilentlyContinue
+          if ($process.ExitCode -ne 0) { throw "Godot export failed with exit code $($process.ExitCode)" }
+          if (-not (Test-Path $exe)) { throw "Vulnus.exe was not created." }
+          Get-ChildItem $build -Recurse | Select-Object FullName,Length
 
       - name: Package playable ZIP
         shell: pwsh
