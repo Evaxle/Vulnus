@@ -226,7 +226,7 @@ public static class RhythiansApi
 		}
 	}
 
-	public static bool SubmitScore(string mapId, double accuracy, int misses, double speed, string cameraMode)
+	public static bool SubmitScore(string mapId, string clientScoreId, double accuracy, int misses, double speed, string cameraMode)
 	{
 		if (!IsAuthenticated || string.IsNullOrWhiteSpace(mapId))
 			return false;
@@ -235,7 +235,7 @@ public static class RhythiansApi
 			var payload = new JObject
 			{
 				["challengeMapId"] = mapId,
-				["clientScoreId"] = Guid.NewGuid().ToString(),
+				["clientScoreId"] = string.IsNullOrWhiteSpace(clientScoreId) ? Guid.NewGuid().ToString() : clientScoreId,
 				["accuracy"] = Math.Max(0, Math.Min(100, accuracy)),
 				["misses"] = Math.Max(0, misses),
 				["speed"] = speed > 0 ? speed : 1,
