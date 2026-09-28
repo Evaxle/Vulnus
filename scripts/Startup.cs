@@ -53,6 +53,13 @@ public class Startup : Node
 		}
 		StageReached("Loading settings", false);
 		Settings.UpdateSettings(true);
+		RhythiansApi.Initialize();
+		if (RhythiansApi.IsAuthenticated)
+		{
+			StageReached("Syncing Rhythians maps", false);
+			if (RhythiansApi.ValidateSession())
+				RhythiansApi.SyncMaps(true);
+		}
 		StageReached("Adding overlays", false);
 		Global.Instance.AddOverlay();
 		StageReached("Loading maps", false);
