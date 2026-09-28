@@ -1,6 +1,9 @@
 using Godot;
 using System;
 using System.IO;
+using IOFile = System.IO.File;
+using IODirectory = System.IO.Directory;
+using IOPath = System.IO.Path;
 using System.IO.Compression;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -14,7 +17,7 @@ namespace Compatibility.SSP
         {
             try
             {
-                using (var stream = File.OpenRead(path))
+                using (var stream = IOFile.OpenRead(path))
                 using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true))
                 {
                     if (reader.ReadUInt32() != 0x6D2B5353) return null;
@@ -40,15 +43,15 @@ namespace Compatibility.SSP
 
         public static void ImportDirectory(string directory)
         {
-            if (!Directory.Exists(directory)) return;
-            foreach (var path in Directory.GetFiles(directory, "*.sspm", SearchOption.TopDirectoryOnly)) Import(path);
+            if (!IODirectory.Exists(directory)) return;
+            foreach (var path in IODirectory.GetFiles(directory, "*.sspm", SearchOption.TopDirectoryOnly)) Import(path);
         }
 
         public static string ReadMapId(string path)
         {
             try
             {
-                using (var stream = File.OpenRead(path))
+                using (var stream = IOFile.OpenRead(path))
                 using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true))
                 {
                     if (reader.ReadUInt32() != 0x6D2B5353) return null;
@@ -276,11 +279,11 @@ namespace Compatibility.SSP
         private static string WriteVulnus(string id, string artist, string title, string mapper, string difficulty, List<JObject> notes, byte[] audio, byte[] cover)
         {
             if (string.IsNullOrWhiteSpace(id) || notes.Count == 0) return null;
-            Directory.CreateDirectory(Global.MapPath);
-            var output = Global.MapPath.PlusFile("rhythians_" + Sanitize(id) + ".vul");
+            IODirectory.CreateDirectory(Global.MapPath);
+            var output = Global.MapIOPath.PlusFile("rhythians_" + Sanitize(id) + ".vul");
             var temp = output + ".tmp";
-            if (File.Exists(temp)) File.Delete(temp);
-            using (var stream = File.Create(temp))
+            if (IOFile.Exists(temp)) IOFile.Delete(temp);
+            using (var stream = IOFile.Create(temp))
             using (var zip = new ZipArchive(stream, ZipArchiveMode.Create))
             {
                 WriteJson(zip, "meta.json", new JObject
@@ -303,8 +306,8 @@ namespace Compatibility.SSP
                 if (audio.Length > 0) WriteBytes(zip, "music.bin", audio);
                 if (cover.Length > 0) WriteBytes(zip, "cover.png", cover);
             }
-            if (File.Exists(output)) File.Delete(output);
-            File.Move(temp, output);
+            if (IOFile.Exists(output)) IOFile.Delete(output);
+            IOFile.Move(temp, output);
             return output;
         }
 
@@ -389,7 +392,7 @@ namespace Compatibility.SSP
 
         private static string Sanitize(string value)
         {
-            foreach (var invalid in Path.GetInvalidFileNameChars()) value = value.Replace(invalid, '_');
+            foreach (var invalid in IOPath.GetInvalidFileNameChars()) value = value.Replace(invalid, '_');
             return string.IsNullOrWhiteSpace(value) ? Guid.NewGuid().ToString("N") : value;
         }
 
