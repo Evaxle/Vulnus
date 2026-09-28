@@ -1,18 +1,22 @@
 using Godot;
 using System;
 using System.IO;
+using IOFile = System.IO.File;
+using IODirectory = System.IO.Directory;
+using IOPath = System.IO.Path;
+using SysEnvironment = System.Environment;
 using Newtonsoft.Json;
 
 public static class RhythKitBridge
 {
-    private static readonly string DirectoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CapoRhythia", "Rhythians", "bridge");
-    private static readonly string EventPath = Path.Combine(DirectoryPath, "events-vulnus.jsonl");
+    private static readonly string DirectoryPath = IOPath.Combine(SysEnvironment.GetFolderPath(SysEnvironment.SpecialFolder.ApplicationData), "CapoRhythia", "Rhythians", "bridge");
+    private static readonly string EventPath = IOPath.Combine(DirectoryPath, "events-vulnus.jsonl");
 
     public static void Send(string eventName, bool running, string mapId = null, string clientScoreId = null, double? accuracy = null, int? misses = null, double? speed = null, bool? qualified = null, string cameraMode = null)
     {
         try
         {
-            Directory.CreateDirectory(DirectoryPath);
+            IODirectory.CreateDirectory(DirectoryPath);
             var payload = new
             {
                 Event = eventName,
@@ -31,7 +35,7 @@ public static class RhythKitBridge
                 CameraMode = cameraMode == "spin" ? "spin" : cameraMode == null ? null : "lock",
                 PointSystem = cameraMode == "spin" ? "RPS" : cameraMode == null ? null : "RPL"
             };
-            File.AppendAllText(EventPath, JsonConvert.SerializeObject(payload) + Environment.NewLine);
+            IOFile.AppendAllText(EventPath, JsonConvert.SerializeObject(payload) + SysEnvironment.NewLine);
         }
         catch (Exception e)
         {
