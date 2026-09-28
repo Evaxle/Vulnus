@@ -17,7 +17,8 @@
 [ext_resource path="res://scripts/menu/Results.cs" type="Script" id=15]
 [ext_resource path="res://assets/images/loading.png" type="Texture" id=16]
 [ext_resource path="res://assets/shaders/mask.gdshader" type="Shader" id=17]
-[ext_resource path="res://assets/fonts/SourceSansPro/SourceSansPro-Regular.ttf" type="DynamicFontData" id=18]\n[ext_resource path="res://assets/images/rhythians-logo.svg" type="Texture" id=19]
+[ext_resource path="res://assets/fonts/SourceSansPro/SourceSansPro-Regular.ttf" type="DynamicFontData" id=18]
+[ext_resource path="res://assets/images/rhythians-logo.svg" type="Texture" id=19]
 
 [sub_resource type="StyleBoxFlat" id=25]
 bg_color = Color( 0.141176, 0.141176, 0.141176, 1 )
