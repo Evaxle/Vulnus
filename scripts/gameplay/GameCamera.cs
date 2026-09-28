@@ -12,54 +12,82 @@ namespace Gameplay
 		public Spatial Cursor = null;
 		public Spatial GhostCursor = null;
 		private static float clamp = (6f - 0.525f) / 2f;
+
 		public override void _EnterTree()
 		{
 			Yaw = 0f;
 			Pitch = 0f;
 			CursorPosition = new Vector2();
+			ClampedCursorPosition = new Vector2();
 			Input.MouseMode = Input.MouseModeEnum.Captured;
+			UpdateCameraTransform();
 		}
+
 		public override void _ExitTree()
 		{
 			Input.MouseMode = Input.MouseModeEnum.Visible;
 		}
+
 		public override void _Input(InputEvent @event)
 		{
 			if (!(@event is InputEventMouseMotion))
 				return;
-			var input = @event as InputEventMouseMotion;
-			Rotation = new Vector3(Mathf.Deg2Rad(Pitch), Mathf.Deg2Rad(Yaw), 0);
-			Translation = new Vector3(0, 0, 7) + new Vector3(ClampedCursorPosition.x, ClampedCursorPosition.y, 0) / 4f + Transform.basis.z / 2f;
+
+			var input = (InputEventMouseMotion)@event;
 			var relative = input.Relative * Settings.MouseSensitivity / 4f;
+
 			if (Settings.CameraMode == 0)
 			{
 				Yaw = Mathf.Wrap(Yaw - relative.x, -180f, 180f);
 				Pitch = Mathf.Clamp(Pitch - relative.y, -90f, 90f);
+				Rotation = new Vector3(Mathf.Deg2Rad(Pitch), Mathf.Deg2Rad(Yaw), 0);
+				UpdateCameraTransform();
 				var position = new Vector2(Translation.x, Translation.y);
 				var look = Transform.basis.z;
-				CursorPosition = position + new Vector2(look.x, look.y) * -Mathf.Abs(Translation.z) / look.z;
-				// v74 = v70.Position + Vector3.new(-math.abs(v70.LookVector.X), v70.LookVector.Y, v70.LookVector.Z) * math.abs(math.abs(v70.Position.X - l__Screen__49.Position.X + v22.Size.X / 2) / v70.LookVector.X);
+				if (Mathf.Abs(look.z) > 0.0001f)
+					CursorPosition = position + new Vector2(look.x, look.y) * -Mathf.Abs(Translation.z) / look.z;
 			}
 			else
 			{
 				Yaw = 0f;
 				Pitch = 0f;
+				Rotation = Vector3.Zero;
 				CursorPosition += new Vector2(relative.x, -relative.y) * 0.1675f;
 			}
-			ClampedCursorPosition = new Vector2(Mathf.Clamp(CursorPosition.x, -clamp, clamp), Mathf.Clamp(CursorPosition.y, -clamp, clamp));
+
+			ClampedCursorPosition = new Vector2(
+				Mathf.Clamp(CursorPosition.x, -clamp, clamp),
+				Mathf.Clamp(CursorPosition.y, -clamp, clamp)
+			);
+
 			if (Settings.CursorDrift)
 				CursorPosition = ClampedCursorPosition;
+
+			UpdateCameraTransform();
+
 			if (Cursor != null)
 				Cursor.Translation = new Vector3(ClampedCursorPosition.x, ClampedCursorPosition.y, 0);
+
 			if (GhostCursor != null)
 			{
 				GhostCursor.Visible = CursorPosition != ClampedCursorPosition;
-				if (!GhostCursor.Visible)
-					return;
-				GhostCursor.Translation = new Vector3(CursorPosition.x, CursorPosition.y, 0);
-				var distance = Mathf.Min(1f, ClampedCursorPosition.DistanceSquaredTo(CursorPosition));
-				((MeshInstance)GhostCursor).MaterialOverride.Set("albedo_color", new Color(1f, 1f, 1f, distance));
+				if (GhostCursor.Visible)
+				{
+					GhostCursor.Translation = new Vector3(CursorPosition.x, CursorPosition.y, 0);
+					var distance = Mathf.Min(1f, ClampedCursorPosition.DistanceSquaredTo(CursorPosition));
+					((MeshInstance)GhostCursor).MaterialOverride.Set("albedo_color", new Color(1f, 1f, 1f, distance));
+				}
 			}
+		}
+
+		private void UpdateCameraTransform()
+		{
+			var basePosition = new Vector3(0, 0, 7) + Transform.basis.z / 2f;
+			if (Settings.CameraMode == 2)
+				basePosition += new Vector3(ClampedCursorPosition.x, ClampedCursorPosition.y, 0) / 4f;
+			else if (Settings.CameraMode == 0)
+				basePosition += new Vector3(ClampedCursorPosition.x, ClampedCursorPosition.y, 0) / 4f;
+			Translation = basePosition;
 		}
 	}
 }

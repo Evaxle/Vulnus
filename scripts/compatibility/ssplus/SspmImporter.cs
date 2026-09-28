@@ -283,6 +283,7 @@ namespace Compatibility.SSP
             var output = Global.MapPath.PlusFile("rhythians_" + Sanitize(id) + ".vul");
             var temp = output + ".tmp";
             if (IOFile.Exists(temp)) IOFile.Delete(temp);
+            var coverName = cover.Length > 0 ? "cover." + GetImageExtension(cover) : "";
             using (var stream = IOFile.Create(temp))
             using (var zip = new ZipArchive(stream, ZipArchiveMode.Create))
             {
@@ -304,11 +305,27 @@ namespace Compatibility.SSP
                     ["rhythiansMapId"] = id
                 });
                 if (audio.Length > 0) WriteBytes(zip, "music.bin", audio);
-                if (cover.Length > 0) WriteBytes(zip, "cover.png", cover);
+                if (cover.Length > 0) WriteBytes(zip, coverName, cover);
             }
             if (IOFile.Exists(output)) IOFile.Delete(output);
             IOFile.Move(temp, output);
             return output;
+        }
+
+        private static string GetImageExtension(byte[] data)
+        {
+            if (data == null || data.Length < 4) return "bin";
+            if (data.Length >= 8 &&
+                data[0] == 0x89 && data[1] == 0x50 && data[2] == 0x4E && data[3] == 0x47 &&
+                data[4] == 0x0D && data[5] == 0x0A && data[6] == 0x1A && data[7] == 0x0A)
+                return "png";
+            if (data[0] == 0xFF && data[1] == 0xD8 && data[2] == 0xFF)
+                return "jpg";
+            if (data.Length >= 12 &&
+                data[0] == 0x52 && data[1] == 0x49 && data[2] == 0x46 && data[3] == 0x46 &&
+                data[8] == 0x57 && data[9] == 0x45 && data[10] == 0x42 && data[11] == 0x50)
+                return "webp";
+            return "bin";
         }
 
         private static void SkipValue(BinaryReader reader, byte type)

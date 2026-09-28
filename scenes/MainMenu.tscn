@@ -338,7 +338,7 @@ custom_styles/normal = SubResource( 25 )
 anchor_top = 0.35
 anchor_right = 1.0
 anchor_bottom = 0.65
-texture = ExtResource( 19 )
+texture = ExtResource( 9 )
 expand = true
 stretch_mode = 6
 
@@ -490,7 +490,7 @@ margin_left = 8.0
 margin_top = 8.0
 margin_right = 48.0
 margin_bottom = -8.0
-texture = ExtResource( 5 )
+texture = ExtResource( 9 )
 expand = true
 stretch_mode = 6
 

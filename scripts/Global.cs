@@ -1,6 +1,8 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using Content.Beatmaps;
+using Compatibility.SSP;
 
 public class Global : Node
 {
@@ -20,6 +22,8 @@ public class Global : Node
 	public override void _Ready()
 	{
 		Input.UseAccumulatedInput = false;
+		if (!GetTree().IsConnected("files_dropped", this, nameof(OnFilesDropped)))
+			GetTree().Connect("files_dropped", this, nameof(OnFilesDropped));
 		RhythKitBridge.Send("VulnusReady", true);
 		var mattPath = ProjectSettings.GlobalizePath("user://").PlusFile("matt.jpg");
 		if (System.IO.File.Exists(mattPath))
@@ -35,6 +39,35 @@ public class Global : Node
 		Viewport root = GetTree().Root;
 		CurrentScene = root.GetChild(root.GetChildCount() - 1);
 	}
+	public void OnFilesDropped(string[] files, int screen)
+	{
+		if (files == null || files.Length == 0)
+			return;
+		var imported = 0;
+		foreach (var path in files)
+		{
+			if (string.IsNullOrWhiteSpace(path) || !string.Equals(System.IO.Path.GetExtension(path), ".sspm", StringComparison.OrdinalIgnoreCase))
+				continue;
+			var converted = SspmImporter.Import(path);
+			if (string.IsNullOrEmpty(converted))
+			{
+				GD.PrintErr("Failed to import dropped SSPM: " + path);
+				continue;
+			}
+			imported++;
+			GD.Print("Imported SSPM: " + path + " -> " + converted);
+		}
+		if (imported == 0)
+			return;
+		BeatmapLoader.LoadMapsFromDirectory(MapPath, true);
+		CallDeferred(nameof(RefreshMapLists));
+	}
+
+	private void RefreshMapLists()
+	{
+		GetTree().CallGroup("map_lists", nameof(MapList.ReloadMaps));
+	}
+
 	public override void _PhysicsProcess(float delta)
 	{
 		if (Input.IsActionJustPressed("fullscreen"))

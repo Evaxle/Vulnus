@@ -36,6 +36,15 @@ public class MapList : Control
 		filters.GetNode<LineEdit>("Search").Text = Search;
 		filters.GetNode<OptionButton>("Sort").Connect("item_selected", this, nameof(SortChanged));
 		filters.GetNode<OptionButton>("Sort").Selected = Sort;
+		AddToGroup("map_lists");
+	}
+
+	public void ReloadMaps()
+	{
+		RootMaps = BeatmapLoader.LoadedMaps;
+		SelectedMapset = null;
+		SelectedMap = null;
+		UpdateDisplayed(true);
 	}
 	public override void _Process(float delta)
 	{
