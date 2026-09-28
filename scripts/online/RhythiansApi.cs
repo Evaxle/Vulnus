@@ -191,8 +191,18 @@ public static class RhythiansApi
 					if (map == null)
 						continue;
 					fresh[map.Id] = map;
-					if (downloadMissing && EnsureMapDownloaded(map.Id))
-						downloaded = true;
+					if (downloadMissing)
+					{
+						try
+						{
+							if (EnsureMapDownloaded(map.Id))
+								downloaded = true;
+						}
+						catch (Exception e)
+						{
+							GD.PrintErr("Rhythians map download skipped for " + map.Id + ": " + e.Message);
+						}
+					}
 				}
 				var nextToken = result["nextOffset"];
 				next = nextToken == null || nextToken.Type == JTokenType.Null ? -1 : nextToken.Value<int>();
