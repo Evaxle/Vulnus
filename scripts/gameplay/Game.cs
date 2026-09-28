@@ -54,12 +54,6 @@ namespace Gameplay
 			if (Mods.Any(m => m is IApplicableToNoteRenderer)) foreach (var mod in Mods.OfType<IApplicableToNoteRenderer>()) mod.ApplyToNoteManager(NoteRenderer);
 			if (Mods.Any(m => m is IApplicableToSyncManager)) foreach (var mod in Mods.OfType<IApplicableToSyncManager>()) mod.ApplyToSyncManager(SyncManager);
 			if (Mods.Any(m => m is IApplicableToHUDManager)) foreach (var mod in Mods.OfType<IApplicableToHUDManager>()) mod.ApplyToHUDManager(HUDManager);
-			Global.Discord.SetActivity(new Discord.ActivityW(
-				state: "Playing a map",
-				details: $"{LoadedMapset.Name} - {LoadedMap.Name}",
-				startTimestamp: DateTime.Now,
-				endTimestamp: DateTime.Now.AddSeconds(SyncManager.AudioPlayer.Stream.GetLength() * SyncManager.Speed)
-			));
 		}
 		public override void _PhysicsProcess(float delta)
 		{
