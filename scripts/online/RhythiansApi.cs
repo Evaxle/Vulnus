@@ -286,8 +286,8 @@ public static class RhythiansApi
 	private static bool EnsureMapDownloaded(string id)
 	{
 		var safe = Sanitize(id);
-		var sspmPath = Global.MapIOPath.PlusFile("rhythians_" + safe + ".sspm");
-		var vulPath = Global.MapIOPath.PlusFile("rhythians_" + safe + ".vul");
+		var sspmPath = Global.MapPath.PlusFile("rhythians_" + safe + ".sspm");
+		var vulPath = Global.MapPath.PlusFile("rhythians_" + safe + ".vul");
 		if (File.Exists(sspmPath) || File.Exists(vulPath))
 			return false;
 		using (var request = CreateRequest(HttpMethod.Get, "maps/" + Uri.EscapeDataString(id) + "/download"))
