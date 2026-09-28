@@ -1,7 +1,8 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.IO;\nusing File = System.IO.File;
+using System.IO;
+using File = System.IO.File;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
