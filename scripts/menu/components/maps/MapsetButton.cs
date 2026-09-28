@@ -43,7 +43,15 @@ public class MapsetButton : Control
 		setButton.GetNode<TextureRect>("Cover/Image").Texture = Mapset.LoadCover();
 		setButton.GetNode<Label>("Title").Text = Mapset.Title;
 		setButton.GetNode<Label>("Title/Artist").Text = Mapset.Artist;
-		setButton.GetNode<Label>("Title/Mapper").Text = Mapset.Mappers;
+		var mapInfo = RhythiansApi.GetMap(Mapset.RhythiansMapId);
+		var mapperText = Mapset.Mappers;
+		if (mapInfo != null)
+		{
+			var rating = mapInfo.Rating.HasValue ? mapInfo.Rating.Value.ToString("0.00") + "★" : "UNRATED";
+			var completed = mapInfo.Completed ? " · COMPLETED" : "";
+			mapperText += " · " + rating + " · " + mapInfo.StatusLabel + completed;
+		}
+		setButton.GetNode<Label>("Title/Mapper").Text = mapperText;
 		if (resetButtons)
 			ResetButtons();
 	}
@@ -83,6 +91,7 @@ public class MapsetButton : Control
 			if (i >= Mapset.Difficulties.Count)
 				list.GetChild<Node>(i).QueueFree();
 		}
+		var mapInfo = RhythiansApi.GetMap(Mapset.RhythiansMapId);
 		for (int i = 0; i < Mapset.Difficulties.Count; i++)
 		{
 			Button btn;
@@ -97,7 +106,15 @@ public class MapsetButton : Control
 				btn = list.GetChild<Button>(i + 1);
 			var difficulty = Mapset.Difficulties[i];
 			btn.Name = i.ToString();
-			btn.GetNode<Label>("Title").Text = difficulty.Name;
+			var title = difficulty.Name;
+			if (mapInfo != null)
+			{
+				var rating = mapInfo.Rating.HasValue ? mapInfo.Rating.Value.ToString("0.00") + "★" : "UNRATED";
+				title += " · " + rating + " · " + mapInfo.StatusLabel;
+				if (mapInfo.Completed)
+					title += " · COMPLETED";
+			}
+			btn.GetNode<Label>("Title").Text = title;
 			btn.GetNode<TextureRect>("Cover").Texture = Mapset.Cover;
 		}
 	}
