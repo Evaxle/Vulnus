@@ -1,0 +1,91 @@
+name: Build Windows Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build-release.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: ubuntu-latest
+    env:
+      GODOT_VERSION: "3.7"
+      GODOT_FLAVOR: "dev1"
+      GODOT_TEMPLATE_DIR: "3.7.dev1.mono"
+      RELEASE_TAG: "v0.1.0-rhythians"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip zip mono-complete ca-certificates curl
+
+      - name: Download Godot 3.7-dev1 Mono headless editor
+        run: |
+          curl -fL "https://downloads.godotengine.org/?flavor=dev1&platform=linux_server.headless.64&slug=mono_linux_headless_64.zip&version=3.7" -o /tmp/godot.zip
+          mkdir -p /tmp/godot
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          GODOT_BIN="$(find /tmp/godot -type f -name 'Godot*' ! -name '*.pck' | head -n 1)"
+          chmod +x "$GODOT_BIN"
+          echo "GODOT_BIN=$GODOT_BIN" >> "$GITHUB_ENV"
+          "$GODOT_BIN" --version
+
+      - name: Install Godot 3.7-dev1 Mono export templates
+        run: |
+          curl -fL "https://downloads.godotengine.org/?flavor=dev1&platform=templates&slug=mono_export_templates.tpz&version=3.7" -o /tmp/templates.tpz
+          rm -rf /tmp/export-templates
+          mkdir -p /tmp/export-templates
+          unzip -q /tmp/templates.tpz -d /tmp/export-templates
+          mkdir -p "$HOME/.local/share/godot/templates/$GODOT_TEMPLATE_DIR"
+          if [ -d /tmp/export-templates/templates ]; then
+            cp -a /tmp/export-templates/templates/. "$HOME/.local/share/godot/templates/$GODOT_TEMPLATE_DIR/"
+          else
+            cp -a /tmp/export-templates/. "$HOME/.local/share/godot/templates/$GODOT_TEMPLATE_DIR/"
+          fi
+          find "$HOME/.local/share/godot/templates/$GODOT_TEMPLATE_DIR" -maxdepth 1 -type f -printf '%f\n' | sort
+
+      - name: Restore and build C# project
+        run: |
+          nuget restore Vulnus.sln -NonInteractive || true
+          "$GODOT_BIN" --path "$GITHUB_WORKSPACE" --editor --quit
+
+      - name: Export Windows x64 game
+        run: |
+          rm -rf build dist
+          mkdir -p build dist
+          "$GODOT_BIN" --path "$GITHUB_WORKSPACE" --export-release "Windows Desktop" "$GITHUB_WORKSPACE/build/Vulnus.exe"
+          test -f build/Vulnus.exe
+          find build -maxdepth 3 -type f -printf '%P\n' | sort
+          (
+            cd build
+            zip -r "../dist/Vulnus-Windows-x64.zip" .
+          )
+          test -s dist/Vulnus-Windows-x64.zip
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Vulnus-Windows-x64
+          path: dist/Vulnus-Windows-x64.zip
+          if-no-files-found: error
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" dist/Vulnus-Windows-x64.zip --clobber
+          else
+            gh release create "$RELEASE_TAG" dist/Vulnus-Windows-x64.zip \
+              --target "$GITHUB_SHA" \
+              --title "Vulnus Rhythians Windows Build" \
+              --notes "Playable Windows x64 build of Vulnus with the Rhythians integration, exported with Godot 3.7-dev1 Mono."
+          fi
