@@ -52,10 +52,9 @@ jobs:
           fi
           find "$HOME/.local/share/godot/templates/$GODOT_TEMPLATE_DIR" -maxdepth 1 -type f -printf '%f\n' | sort
 
-      - name: Restore and build C# project
+      - name: Prepare project
         run: |
-          nuget restore Vulnus.sln -NonInteractive || true
-          "$GODOT_BIN" --path "$GITHUB_WORKSPACE" --build-solutions
+          "$GODOT_BIN" --version
 
       - name: Export Windows x64 game
         run: |
