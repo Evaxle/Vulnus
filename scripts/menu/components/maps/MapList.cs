@@ -59,10 +59,9 @@ public class MapList : Control
 	{
 		if (amount == 0)
 			return;
-		if (scroll + amount < 0 || scroll + amount > DisplayedMaps.Count)
-			return;
-		scroll += amount;
-		RenderButtons();
+		if (DisplayedMaps == null) return;
+		scroll = Mathf.Clamp(scroll + amount, 0, Math.Max(0, DisplayedMaps.Count - 1));
+		if (render) RenderButtons();
 	}
 	private MapsetButton newButton()
 	{
@@ -112,11 +111,12 @@ public class MapList : Control
 	public void UpdateDisplayed(bool render = false)
 	{
 		scroll = 0;
+		scrollf = 0;
 		var search = filters.GetNode<LineEdit>("Search").Text.Trim();
 		if (search != "")
 			DisplayedMaps = RootMaps.FindAll((BeatmapSet set) => IsSimilar(set, search));
 		else
-			DisplayedMaps = RootMaps;
+			DisplayedMaps = new List<BeatmapSet>(RootMaps);
 		switch (filters.GetNode<OptionButton>("Sort").Selected)
 		{
 			case 0: // Title (asc.)
@@ -134,13 +134,13 @@ public class MapList : Control
 			case 2: // Artist (asc.)
 				DisplayedMaps.Sort(delegate (BeatmapSet a, BeatmapSet b)
 				{
-					return a.Name.CompareTo(b.Name);
+					return a.Artist.CompareTo(b.Artist);
 				});
 				break;
 			case 3: // Artist (dsc.)
 				DisplayedMaps.Sort(delegate (BeatmapSet a, BeatmapSet b)
 				{
-					return -a.Name.CompareTo(b.Name);
+					return -a.Artist.CompareTo(b.Artist);
 				});
 				break;
 			// UNIMPLEMENTED BELOW
@@ -158,6 +158,10 @@ public class MapList : Control
 				break;
 			default:
 				break;
+		}
+		if (SelectedMapset != null && !DisplayedMaps.Contains(SelectedMapset))
+		{
+			SelectedMapset = null; SelectedMap = null; MapSelected(null);
 		}
 		if (!render)
 			return;

@@ -35,6 +35,6 @@ public partial class View : Control
 		ViewTween.InterpolateProperty(this, "modulate:a", 1, 0, 0.15f, Tween.TransitionType.Sine, Tween.EaseType.Out);
 		ViewTween.Start();
 		await ToSignal(ViewTween, "tween_all_completed");
-		this.Visible = false;
+		if (!IsActive) this.Visible = false;
 	}
 }

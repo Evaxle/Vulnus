@@ -81,7 +81,7 @@ public class MapsetButton : Control
 		for (int i = 0; i < children; i++)
 		{
 			if (i >= Mapset.Difficulties.Count)
-				list.GetChild<Node>(i).QueueFree();
+				list.GetChild<Node>(i + 1).QueueFree();
 		}
 		for (int i = 0; i < Mapset.Difficulties.Count; i++)
 		{

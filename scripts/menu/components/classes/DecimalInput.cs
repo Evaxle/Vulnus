@@ -11,7 +11,10 @@ public class DecimalInput : Control
 	public void SetValue(float value)
 	{
 		Value = value;
-		GetNode<SpinBox>("SpinBox").Value = value;
+		var input = GetNode<SpinBox>("SpinBox");
+		input.SetBlockSignals(true);
+		input.Value = value;
+		input.SetBlockSignals(false);
 	}
 	public void OnValueChanged(float value)
 	{
