@@ -67,16 +67,21 @@ jobs:
         run: |
           $stdout = "$env:RUNNER_TEMP\godot-build-out.log"
           $stderr = "$env:RUNNER_TEMP\godot-build-err.log"
-          $arguments = "--no-window --verbose --path `"$env:GITHUB_WORKSPACE`" --build-solutions"
+          $arguments = "--no-window --verbose --quit --path `"$env:GITHUB_WORKSPACE`" --build-solutions"
           $process = Start-Process -FilePath $env:GODOT_BIN -ArgumentList $arguments -PassThru -NoNewWindow -RedirectStandardOutput $stdout -RedirectStandardError $stderr
-          if (-not $process.WaitForExit(240000)) {
+          if (-not $process.WaitForExit(120000)) {
             Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-            Get-Content $stdout -ErrorAction SilentlyContinue
-            Get-Content $stderr -ErrorAction SilentlyContinue
-            throw "Godot C# build timed out after 240 seconds."
           }
           Get-Content $stdout -ErrorAction SilentlyContinue
           Get-Content $stderr -ErrorAction SilentlyContinue
+          $buildLogs = Join-Path $env:APPDATA "Godot\mono\build_logs"
+          if (Test-Path $buildLogs) {
+            Get-ChildItem $buildLogs -Recurse -Filter "msbuild_log.txt" | ForEach-Object {
+              Write-Host "===== $($_.FullName) ====="
+              Get-Content $_.FullName
+            }
+          }
+          if (-not $process.HasExited) { throw "Godot C# build did not exit cleanly." }
           if ($process.ExitCode -ne 0) { throw "Godot C# build failed with exit code $($process.ExitCode)" }
 
       - name: Export playable Windows x64 build
