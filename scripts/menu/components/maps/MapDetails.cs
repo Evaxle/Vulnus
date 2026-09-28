@@ -61,7 +61,16 @@ public class MapDetails : View
 		mapDetails.GetNode<Label>("Title").Text = currentMap.Title;
 		mapDetails.GetNode<Label>("Title/Artist").Text = currentMap.Artist;
 		mapDetails.GetNode<Label>("Title/Mapper").Text = currentMap.Mappers;
-		mapDetails.GetNode<Label>("Difficulty").Text = map.Name;
+		var difficultyText = map.Name;
+		var mapInfo = RhythiansApi.GetMap(currentMap.RhythiansMapId);
+		if (mapInfo != null)
+		{
+			var rating = mapInfo.Rating.HasValue ? mapInfo.Rating.Value.ToString("0.00") + "★" : "UNRATED";
+			difficultyText += " · " + rating + " · " + mapInfo.StatusLabel;
+			if (mapInfo.Completed)
+				difficultyText += " · COMPLETED";
+		}
+		mapDetails.GetNode<Label>("Difficulty").Text = difficultyText;
 		musicPreview.Stream = currentMap.LoadAudio();
 		musicPreview.Play(musicPreview.Stream.GetLength() / 3f);
 		loadingMap = Task.Run(loadMap);
