@@ -62,18 +62,22 @@ jobs:
         with:
           path: ${{ runner.temp }}\godot\Godot_v3.7-dev1_mono_win64
 
-      - name: Build C# solution
+      - name: Build C# solution with Godot
         shell: pwsh
         run: |
-          dotnet restore Vulnus.sln
-          dotnet build Vulnus.sln --no-restore --configuration ExportRelease
-          if ($LASTEXITCODE -ne 0) { throw "C# solution build failed with exit code $LASTEXITCODE" }
-
-      - name: Restore and compile C# project
-        shell: pwsh
-        run: |
-          nuget restore Vulnus.sln -NonInteractive
-          msbuild Vulnus.sln /t:Build /p:Configuration=ExportRelease /m /v:minimal
+          $stdout = "$env:RUNNER_TEMP\godot-build-out.log"
+          $stderr = "$env:RUNNER_TEMP\godot-build-err.log"
+          $arguments = "--no-window --verbose --path `"$env:GITHUB_WORKSPACE`" --build-solutions"
+          $process = Start-Process -FilePath $env:GODOT_BIN -ArgumentList $arguments -PassThru -NoNewWindow -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+          if (-not $process.WaitForExit(240000)) {
+            Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+            Get-Content $stdout -ErrorAction SilentlyContinue
+            Get-Content $stderr -ErrorAction SilentlyContinue
+            throw "Godot C# build timed out after 240 seconds."
+          }
+          Get-Content $stdout -ErrorAction SilentlyContinue
+          Get-Content $stderr -ErrorAction SilentlyContinue
+          if ($process.ExitCode -ne 0) { throw "Godot C# build failed with exit code $($process.ExitCode)" }
 
       - name: Export playable Windows x64 build
         shell: pwsh
