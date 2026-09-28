@@ -59,7 +59,7 @@ namespace Gameplay
 			}
 			if (SongPlaying && !AudioPlayer.Playing)
 				AudioPlayer.Play();
-			NoteTime = SongTime;
+			NoteTime = SongTime + Settings.MusicOffset / 1000.0;
 		}
 		public void AttemptSkip()
 		{

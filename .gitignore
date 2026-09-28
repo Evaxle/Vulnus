@@ -15,3 +15,16 @@ build/
 
 # VSC
 .vscode/
+# Local content and build outputs
+/maps/
+/settings.json
+*.sspm
+/Logs/
+/UserSettings/
+/BepInEx/
+/Vulnus_Data/
+/Unity*.dll
+/Unity*.exe
+/GameAssembly.dll
+*.tmp
+!export_presets.cfg

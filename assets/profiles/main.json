@@ -1,0 +1,460 @@
+{
+  "format": "vulnus-settings",
+  "version": 1,
+  "settings": {
+    "AnyPause": false,
+    "CameraMode": 1,
+    "MouseSensitivity": 1.0,
+    "ApproachMode": 1,
+    "ApproachDistance": 10,
+    "ApproachTime": 0.3333333333333333,
+    "ApproachRate": 30,
+    "Volume": [
+      25,
+      25,
+      25
+    ],
+    "RenderScale": 1.0,
+    "UIScale": 1.0,
+    "CursorDrift": false,
+    "Bloom": 0,
+    "FPSLimit": 0,
+    "VSync": false,
+    "Debanding": true,
+    "HalfGhost": true,
+    "FadeLength": 0,
+    "NoteScale": 0.93,
+    "NoteOpacity": 0.65,
+    "CursorScale": 1.1,
+    "CursorOpacity": 1,
+    "CursorRotation": 0,
+    "CursorSpin": 0.0,
+    "CursorColor": "f2ffff",
+    "CameraFov": 74,
+    "Parallax": 2,
+    "Fullscreen": false,
+    "ShowGrid": true,
+    "ShowHealth": true,
+    "ShowLeftPanel": true,
+    "ShowRightPanel": true,
+    "AutoPreview": true,
+    "PlayHitSound": true,
+    "PlayMissSound": true,
+    "MusicOffset": 0.0,
+    "CursorAsset": "",
+    "ColorsetAsset": "",
+    "BorderAsset": "grid_outer-20260611-141743-20260713-153058-20260716-013132.png",
+    "BackgroundAsset": "",
+    "NoteAsset": "Testing 1-20260823-005953-20260824-233431.obj",
+    "HitSoundAsset": "",
+    "MissSoundAsset": ""
+  },
+  "unmapped": {
+    "GridParallax": {
+      "Value": 0
+    },
+    "NoteSkin": {
+      "Value": "Testing 1-20260823-005953-20260824-233431.obj"
+    },
+    "BorderSkin": {
+      "Value": "grid_outer-20260611-141743-20260713-153058-20260716-013132.png"
+    },
+    "ColorSet": {
+      "Value": "Textures/Game/colorsets/Pastel Blue.txt"
+    },
+    "HitEffect": {
+      "Value": "none"
+    },
+    "HitEffectColorRed": {
+      "Value": 255
+    },
+    "HitEffectColorGreen": {
+      "Value": 255
+    },
+    "HitEffectColorBlue": {
+      "Value": 255
+    },
+    "SplashEffectRadius": {
+      "Value": 1
+    },
+    "SplashEffectThickness": {
+      "Value": 0.1
+    },
+    "SplashEffectOpacity": {
+      "Value": 1
+    },
+    "BreakEffectSpeed": {
+      "Value": 1
+    },
+    "BreakEffectStartOpacity": {
+      "Value": 1
+    },
+    "BreakEffectFallSpeed": {
+      "Value": 1
+    },
+    "BreakEffectPieceCount": {
+      "Value": 2
+    },
+    "BreakEffectRandomization": {
+      "Value": 0
+    },
+    "BreakEffectPushbackAmount": {
+      "Value": 0
+    },
+    "SpinBoundedCamera": {
+      "Value": false
+    },
+    "DeathSlowdown": {
+      "Value": false
+    },
+    "PushBack": {
+      "Value": false
+    },
+    "CursorSkin": {
+      "Value": "Textures/Game/cursors/box-hollow.png"
+    },
+    "CursorTrailEnabled": {
+      "Value": false
+    },
+    "CursorTrailSkin": {
+      "Value": "Textures/Game/cursors/circle.png"
+    },
+    "CursorTrailInheritFromCursor": {
+      "Value": true
+    },
+    "CursorTrailColorRed": {
+      "Value": 253
+    },
+    "CursorTrailColorGreen": {
+      "Value": 255
+    },
+    "CursorTrailColorBlue": {
+      "Value": 255
+    },
+    "CursorTrailGradient": {
+      "Value": []
+    },
+    "CursorTrailGradientEnabled": {
+      "Value": true
+    },
+    "CursorTrailShrinkOverTime": {
+      "Value": true
+    },
+    "CursorTrailFadeTimeSeconds": {
+      "Value": 0.005
+    },
+    "CursorTrailOpacity": {
+      "Value": 0.7
+    },
+    "CursorTrailSpacingMultiplier": {
+      "Value": 0.15
+    },
+    "BackgroundRed": {
+      "Value": 0
+    },
+    "BackgroundGreen": {
+      "Value": 0
+    },
+    "BackgroundBlue": {
+      "Value": 0
+    },
+    "BackgroundAccentRed": {
+      "Value": 255
+    },
+    "BackgroundAccentGreen": {
+      "Value": 255
+    },
+    "BackgroundAccentBlue": {
+      "Value": 255
+    },
+    "BackgroundAccentFromHitNote": {
+      "Value": false
+    },
+    "BackgroundImages": {
+      "Value": [
+        {
+          "Path": "208534~1(1) (3)-20260718-020708.png",
+          "Fit": 2,
+          "Placement": 0,
+          "CenterX": 0.48830935,
+          "CenterY": 0.49040774,
+          "ScaleX": 1.0017601,
+          "ScaleY": 1.0033545,
+          "Rotation": 0,
+          "FlipHorizontal": false,
+          "SpaceX": 0,
+          "SpaceY": 0,
+          "SpaceWidth": 8,
+          "SpaceHeight": 8,
+          "TintRed": 255,
+          "TintGreen": 255,
+          "TintBlue": 255,
+          "TintOpacity": 0
+        },
+        {
+          "Path": "spectator_list_7.png",
+          "Fit": 2,
+          "Placement": 0,
+          "CenterX": 0.08363309,
+          "CenterY": 0.15787368,
+          "ScaleX": 0.157509,
+          "ScaleY": 0.4443548,
+          "Rotation": 0,
+          "FlipHorizontal": false,
+          "SpaceX": 0,
+          "SpaceY": 0,
+          "SpaceWidth": 8,
+          "SpaceHeight": 8,
+          "TintRed": 255,
+          "TintGreen": 255,
+          "TintBlue": 255,
+          "TintOpacity": 0
+        }
+      ]
+    },
+    "BackgroundTunnelEnabled": {
+      "Value": false
+    },
+    "BackgroundTunnelOpacity": {
+      "Value": 0.2
+    },
+    "BackgroundSineEnabled": {
+      "Value": false
+    },
+    "BackgroundSineOpacity": {
+      "Value": 0.35
+    },
+    "BackgroundSineAmbientOpacity": {
+      "Value": 0.22
+    },
+    "BackgroundSineOuterAmbientOpacity": {
+      "Value": 0.12
+    },
+    "BackgroundSineLineWidth": {
+      "Value": 10
+    },
+    "BackgroundSineWaveAmplitude": {
+      "Value": 160
+    },
+    "BackgroundSineWaveDuration": {
+      "Value": 1.25
+    },
+    "BackgroundChevronEnabled": {
+      "Value": false
+    },
+    "BackgroundChevronOpacity": {
+      "Value": 0.25
+    },
+    "BackgroundChevronWidth": {
+      "Value": 12
+    },
+    "BackgroundChevronGap": {
+      "Value": 1250
+    },
+    "BackgroundChevronSpeedMultiplier": {
+      "Value": 0.7
+    },
+    "BackgroundChevronSmallSize": {
+      "Value": 430
+    },
+    "BackgroundChevronLargeSize": {
+      "Value": 435
+    },
+    "BackgroundRaysEnabled": {
+      "Value": false
+    },
+    "BackgroundRaysIntensity": {
+      "Value": 0.4
+    },
+    "BackgroundRaysOpacity": {
+      "Value": 0.2
+    },
+    "BackgroundRaysWidth": {
+      "Value": 12
+    },
+    "BackgroundGridEnabled": {
+      "Value": false
+    },
+    "BackgroundGridOpacity": {
+      "Value": 0.22
+    },
+    "BackgroundGridLineWidth": {
+      "Value": 8
+    },
+    "BackgroundGridCellSize": {
+      "Value": 320
+    },
+    "BackgroundGridCenterGap": {
+      "Value": 1100
+    },
+    "BackgroundGridSpeedMultiplier": {
+      "Value": 0.75
+    },
+    "BackgroundGridFadeFalloff": {
+      "Value": 1.35
+    },
+    "PanelOpacity": {
+      "Value": 0.59999996
+    },
+    "PanelBackgroundOpacity": {
+      "Value": 0
+    },
+    "PanelColorRed": {
+      "Value": 255
+    },
+    "PanelColorGreen": {
+      "Value": 255
+    },
+    "PanelColorBlue": {
+      "Value": 255
+    },
+    "SongInfoEnabled": {
+      "Value": true
+    },
+    "SongProgressBarEnabled": {
+      "Value": true
+    },
+    "SongProgressBarColorRed": {
+      "Value": 0
+    },
+    "SongProgressBarColorGreen": {
+      "Value": 0
+    },
+    "SongProgressBarColorBlue": {
+      "Value": 0
+    },
+    "SongProgressBarAlpha": {
+      "Value": 0.8627451
+    },
+    "HealthBarColorRed": {
+      "Value": 21
+    },
+    "HealthBarColorGreen": {
+      "Value": 92
+    },
+    "HealthBarColorBlue": {
+      "Value": 11
+    },
+    "HealthBarAlpha": {
+      "Value": 0.8058608
+    },
+    "FailVignetteOpacity": {
+      "Value": 0.04
+    },
+    "MissEffectOpacity": {
+      "Value": 0.25
+    },
+    "BorderColorRed": {
+      "Value": 255
+    },
+    "BorderColorGreen": {
+      "Value": 255
+    },
+    "BorderColorBlue": {
+      "Value": 255
+    },
+    "BorderOpacity": {
+      "Value": 0.3992674
+    },
+    "PlayfieldGridEnabled": {
+      "Value": true
+    },
+    "PlayfieldGridColorRed": {
+      "Value": 255
+    },
+    "PlayfieldGridColorGreen": {
+      "Value": 255
+    },
+    "PlayfieldGridColorBlue": {
+      "Value": 255
+    },
+    "PlayfieldGridOpacity": {
+      "Value": 0
+    },
+    "PlayfieldGridThickness": {
+      "Value": 2
+    },
+    "PanelGap": {
+      "Value": 0
+    },
+    "PanelAngle": {
+      "Value": 0.049999997
+    },
+    "InterfaceValuesFontSize": {
+      "Value": 1.6
+    },
+    "InterfaceTextColorRed": {
+      "Value": 255
+    },
+    "InterfaceTextColorGreen": {
+      "Value": 255
+    },
+    "InterfaceTextColorBlue": {
+      "Value": 255
+    },
+    "PlayfieldComboTextColorRed": {
+      "Value": 255
+    },
+    "PlayfieldComboTextColorGreen": {
+      "Value": 255
+    },
+    "PlayfieldComboTextColorBlue": {
+      "Value": 255
+    },
+    "PlayfieldComboTextOpacity": {
+      "Value": 0.05
+    },
+    "PlayfieldComboTextFontSize": {
+      "Value": 190
+    },
+    "PlayfieldComboTextVerticalPositionPercent": {
+      "Value": 25
+    },
+    "ComboRingColorRed": {
+      "Value": 0
+    },
+    "ComboRingColorGreen": {
+      "Value": 200
+    },
+    "ComboRingColorBlue": {
+      "Value": 200
+    },
+    "ComboRingOpacity": {
+      "Value": 1
+    },
+    "GameSceneDisableGui": {
+      "Value": false
+    },
+    "ReplayOverlayEnabled": {
+      "Value": true
+    },
+    "HideLeaderboard": {
+      "Value": true
+    },
+    "LeftPanelComboRingEnabled": {
+      "Value": false
+    },
+    "LeftPanelPausesEnabled": {
+      "Value": false
+    },
+    "LeftPanelGradeEnabled": {
+      "Value": false
+    },
+    "LeftPanelAccuracyEnabled": {
+      "Value": true
+    },
+    "RightPanelScoreEnabled": {
+      "Value": false
+    },
+    "RightPanelMissesEnabled": {
+      "Value": true
+    },
+    "RightPanelNotesEnabled": {
+      "Value": false
+    },
+    "RightPanelPointsEnabled": {
+      "Value": true
+    }
+  },
+  "conversionNotes": "Approach timing and supported visuals are mapped. Sensitivity/parallax are engine-specific and may need adjustment. Unmapped settings are preserved, not applied."
+}

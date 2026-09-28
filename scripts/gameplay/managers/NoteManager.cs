@@ -36,20 +36,19 @@ namespace Gameplay
 			SyncManager = Game.GetNode<SyncManager>("SyncManager");
 			Notes = new List<Note>();
 			var sorted = Game.LoadedMapData.Notes.OrderBy(note => note.T).ToList();
-			int mapIndex = 0;
-			foreach (NoteData noteData in Game.LoadedMapData.Notes)
+			var colors = AssetLibrary.Colors();
+			for (int i = 0; i < sorted.Count; i++)
 			{
-				var i = sorted.IndexOf(noteData);
+				var noteData = sorted[i];
 				var note = new Note(noteData.X * -2, noteData.Y * 2, noteData.T, i);
 				note.Data = noteData;
-				note.Color = new Color(mapIndex % 2 == 0 ? "#ff0000" : "#00ffff");
+				note.Color = colors[i % colors.Length];
 				if (Game.Mods.Any(m => m is IApplicableToNote))
 				{
 					foreach (var mod in Game.Mods.OfType<IApplicableToNote>())
 						mod.ApplyToNote(note);
 				}
 				Notes.Add(note);
-				mapIndex++;
 			}
 			OrderedNotes = Notes.OrderBy(note => note.T).ToList();
 			if (Notes.Count > 0)

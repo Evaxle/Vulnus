@@ -1,3 +1,7 @@
+using Path = System.IO.Path;
+using File = System.IO.File;
+using Directory = System.IO.Directory;
+using Environment = System.Environment;
 using Godot;
 using System;
 using System.IO;

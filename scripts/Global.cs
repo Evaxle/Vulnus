@@ -4,12 +4,20 @@ using System.Collections.Generic;
 
 public class Global : Node
 {
-	public static string MapPath = OS.GetUserDataDir().PlusFile("maps");
+	public static string UserPath = ResolveUserPath();
+	public static string MapPath = UserPath.PlusFile("maps");
+	private static string ResolveUserPath()
+	{
+		var args = OS.GetCmdlineArgs();
+		for (int i = 0; i < args.Length - 1; i++)
+			if (args[i] == "--vulnus-user-dir") return System.IO.Path.GetFullPath(args[i + 1]);
+		return OS.GetUserDataDir();
+	}
 
 	public static Global Instance;
-	public static Discord.DiscordW Discord;
 	public static Texture Matt;
 	public Node CurrentScene { get; private set; }
+	public void RegisterScene(Node scene) { CurrentScene = scene; }
 	public Control Overlay { get; private set; }
 	public Dictionary<string, Control> Overlays { get; private set; }
 	public Global() : base()
@@ -17,12 +25,11 @@ public class Global : Node
 		if (!System.IO.Directory.Exists(MapPath))
 			System.IO.Directory.CreateDirectory(MapPath);
 		Instance = this;
-		Discord = new Discord.DiscordW();
-		Discord.SetActivity(new Discord.ActivityW());
 	}
 	public override void _Ready()
 	{
 		Input.UseAccumulatedInput = false;
+		AddChild(new ImportCoordinator());
 		RhythKitBridge.Send("VulnusReady", true);
 		var mattPath = ProjectSettings.GlobalizePath("user://").PlusFile("matt.jpg");
 		if (System.IO.File.Exists(mattPath))
@@ -35,14 +42,11 @@ public class Global : Node
 		}
 		else
 			Matt = (StreamTexture)GD.Load("res://assets/images/matt.jpg");
-		Viewport root = GetTree().Root;
-		CurrentScene = root.GetChild(root.GetChildCount() - 1);
 	}
 	public override void _PhysicsProcess(float delta)
 	{
 		if (Input.IsActionJustPressed("fullscreen"))
-			OS.WindowFullscreen = !OS.WindowFullscreen;
-		Discord.RunCallbacks();
+			{ Settings.Fullscreen = !OS.WindowFullscreen; Settings.UpdateSettings(); }
 	}
 	public void AddOverlay()
 	{
@@ -60,15 +64,21 @@ public class Global : Node
 	}
 	public void GotoScene(string path, Action<Node> callback = null)
 	{
-		CallDeferred(nameof(DeferredGotoScene), path, callback);
+		nextPath = path; nextCallback = callback;
+        CallDeferred(nameof(DeferredGotoScene));
 	}
-	private void DeferredGotoScene(string path, Action<Node> callback = null)
+	private string nextPath;
+    private Action<Node> nextCallback;
+    private void DeferredGotoScene()
 	{
-		CurrentScene.Free();
+        var path = nextPath; var callback = nextCallback;
+        nextPath = null; nextCallback = null;
+        if (path == null) return;
+        CurrentScene?.QueueFree();
 		var nextScene = (PackedScene)GD.Load(path);
-		CurrentScene = nextScene.Instance();
+        CurrentScene = nextScene.Instance();
 		GetTree().Root.AddChild(CurrentScene);
-		GetTree().Root.MoveChild(CurrentScene, 1);
+        GetTree().Root.MoveChild(CurrentScene, 1);
 		callback?.Invoke(CurrentScene);
 	}
 	public void FinishedLoading()

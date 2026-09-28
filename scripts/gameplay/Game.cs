@@ -35,6 +35,7 @@ namespace Gameplay
 			NoteRenderer = NoteManager.GetNode<NoteRenderer>("NoteRenderer");
 			SyncManager = GetNode<SyncManager>("SyncManager");
 			HUDManager = GetNode<HUDManager>("HUD");
+			ApplyAppearance();
 			Score = new Score();
 			CanFail = false;
 			Ended = false;
@@ -55,13 +56,42 @@ namespace Gameplay
 			if (Mods.Any(m => m is IApplicableToNoteRenderer)) foreach (var mod in Mods.OfType<IApplicableToNoteRenderer>()) mod.ApplyToNoteManager(NoteRenderer);
 			if (Mods.Any(m => m is IApplicableToSyncManager)) foreach (var mod in Mods.OfType<IApplicableToSyncManager>()) mod.ApplyToSyncManager(SyncManager);
 			if (Mods.Any(m => m is IApplicableToHUDManager)) foreach (var mod in Mods.OfType<IApplicableToHUDManager>()) mod.ApplyToHUDManager(HUDManager);
-			Global.Discord.SetActivity(new Discord.ActivityW(
-				state: "Playing a map",
-				details: $"{LoadedMapset.Name} - {LoadedMap.Name}",
-				startTimestamp: DateTime.Now,
-				endTimestamp: DateTime.Now.AddSeconds(SyncManager.AudioPlayer.Stream.GetLength() * SyncManager.Speed)
-			));
 		}
+        private AudioStreamPlayer hitSound, missSound;
+        private AudioStreamPlayer Sound(string kind, string name)
+        {
+            var path = AssetLibrary.Resolve(kind, name);
+            if (path == null) return null;
+            var player = new AudioStreamPlayer { Bus = "SFX", Stream = AudioHandler.LoadAudio(path) }; AddChild(player); return player;
+        }
+        public void ApplyAppearance()
+        {
+            Camera.Fov = Settings.CameraFov;
+            foreach (MeshInstance cursor in new[] { (MeshInstance)Cursor, (MeshInstance)GhostCursor })
+            {
+                cursor.Scale = Vector3.One * Settings.CursorScale;
+                cursor.RotateObjectLocal(Vector3.Up, Mathf.Deg2Rad(Settings.CursorRotation));
+                cursor.MaterialOverride = new SpatialMaterial { FlagsTransparent = true, FlagsUnshaded = true, RenderPriority = 3,
+                    AlbedoTexture = AssetLibrary.Texture("cursors", Settings.CursorAsset, "res://assets/skin/cursor.png"),
+                    AlbedoColor = new Color(new Color(Settings.CursorColor), Settings.CursorOpacity) };
+            }
+            GhostCursor.Visible = false;
+            var grid = GetNode<MeshInstance>("Grid"); grid.Visible = Settings.ShowGrid;
+            grid.MaterialOverride = new SpatialMaterial { FlagsTransparent = true, FlagsUnshaded = true,
+                AlbedoTexture = AssetLibrary.Texture("borders", Settings.BorderAsset, "res://assets/skin/grid_minimal.png") };
+            GetNode<Spatial>("HUD/LeftPanel").Visible = Settings.ShowLeftPanel;
+            GetNode<Spatial>("HUD/RightPanel").Visible = Settings.ShowRightPanel;
+            GetNode<Spatial>("HUD/HealthPanel").Visible = Settings.ShowHealth;
+            var background = AssetLibrary.Texture("backgrounds", Settings.BackgroundAsset);
+            if (background != null)
+            {
+                var plane = new MeshInstance { Mesh = new QuadMesh { Size = new Vector2(220, 140) }, Translation = new Vector3(0, 0, -150),
+                    MaterialOverride = new SpatialMaterial { FlagsUnshaded = true, AlbedoTexture = background } }; AddChild(plane);
+            }
+            var meshPath = AssetLibrary.Resolve("notes", Settings.NoteAsset);
+            if (meshPath != null) try { NoteRenderer.Multimesh.Mesh = AssetLibrary.ParseObj(System.IO.File.ReadAllText(meshPath)); } catch(Exception e) { GD.PrintErr(e.Message); }
+            hitSound = Sound("hitsounds", Settings.HitSoundAsset); missSound = Sound("misssounds", Settings.MissSoundAsset);
+        }
 		public override void _PhysicsProcess(float delta)
 		{
 			if (Input.IsActionJustPressed("skip") && SyncManager.CanSkip()) SyncManager.AttemptSkip();
@@ -89,6 +119,7 @@ namespace Gameplay
 		}
 		public void OnNoteHit(Note note)
 		{
+			if (Settings.PlayHitSound) hitSound?.Play();
 			Score.Points += 25 * Score.Multiplier;
 			Score.Miniplier += 1;
 			if (Score.Miniplier >= 8 && Score.Multiplier < 8)
@@ -107,6 +138,7 @@ namespace Gameplay
 			Score.Miniplier = 0;
 			Score.Multiplier = Mathf.Max(1, Score.Multiplier - 1);
 			Score.Combo = 0;
+			if (Settings.PlayMissSound) missSound?.Play();
 			Score.Misses += 1;
 			Score.Total += 1;
 			if (!Score.Failed) Score.Health = Math.Max(0, Score.Health - 2);

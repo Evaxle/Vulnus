@@ -14,7 +14,7 @@ public static class Settings
 	public static float ApproachDistance = 50f;
 	public static float ApproachTime = 1f;
 	public static float ApproachRate = 50f;
-	public static int[] Volume = new int[3];
+	public static int[] Volume = new int[] { 25, 25, 25 };
 	public static float RenderScale = 1f;
 	public static float UIScale = 1f;
 	public static bool CursorDrift = false;
@@ -22,15 +22,73 @@ public static class Settings
 	public static int FPSLimit = 0;
 	public static bool VSync = false;
 	public static bool Debanding = true;
+	public static bool HalfGhost = false;
+	public static float FadeLength = 0.25f;
+	public static float NoteScale = 1f;
+	public static float NoteOpacity = 1f;
+	public static float CursorScale = 1f;
+	public static float CursorOpacity = 1f;
+	public static float CursorRotation = 0f;
+	public static float CursorSpin = 0f;
+	public static string CursorColor = "ffffff";
+	public static float CameraFov = 70f;
+	public static float Parallax = 1f;
+	public static bool Fullscreen = false;
+	public static bool ShowGrid = true;
+	public static bool ShowHealth = true;
+	public static bool ShowLeftPanel = true;
+	public static bool ShowRightPanel = true;
+	public static bool AutoPreview = true;
+	public static bool PlayHitSound = true;
+	public static bool PlayMissSound = true;
+	public static float MusicOffset = 0f;
+	public static string CursorAsset = "";
+	public static string ColorsetAsset = "";
+	public static string BorderAsset = "";
+	public static string BackgroundAsset = "";
+	public static string NoteAsset = "";
+	public static string HitSoundAsset = "";
+	public static string MissSoundAsset = "";
+	public static void Validate()
+	{
+		foreach (var field in typeof(Settings).GetFields(BindingFlags.Public | BindingFlags.Static))
+		{
+			if (field.FieldType == typeof(float)) { float v = (float)field.GetValue(null); if (float.IsNaN(v) || float.IsInfinity(v)) field.SetValue(null, 1f); }
+			if (field.FieldType == typeof(string) && field.GetValue(null) == null) field.SetValue(null, "");
+		}
+		ApproachMode = Mathf.Clamp(ApproachMode, 0, 2);
+		CameraMode = Mathf.Clamp(CameraMode, 0, 1);
+		ApproachDistance = Mathf.Clamp(ApproachDistance, 1, 200);
+		ApproachRate = Mathf.Clamp(ApproachRate, 1, 200);
+		ApproachTime = Mathf.Clamp(ApproachTime, 0.01f, 10);
+		MouseSensitivity = Mathf.Clamp(MouseSensitivity, 0.01f, 10);
+		RenderScale = Mathf.Clamp(RenderScale, 0.25f, 2);
+		UIScale = Mathf.Clamp(UIScale, 0.5f, 2);
+		FadeLength = Mathf.Clamp(FadeLength, 0, 1);
+		NoteOpacity = Mathf.Clamp(NoteOpacity, 0.05f, 1);
+		NoteScale = Mathf.Clamp(NoteScale, 0.1f, 3);
+		CursorScale = Mathf.Clamp(CursorScale, 0.1f, 4);
+		CursorOpacity = Mathf.Clamp(CursorOpacity, 0.05f, 1);
+		CursorRotation = Mathf.Clamp(CursorRotation, -360, 360);
+		CursorSpin = Mathf.Clamp(CursorSpin, -1080, 1080);
+		CameraFov = Mathf.Clamp(CameraFov, 30, 120);
+		Parallax = Mathf.Clamp(Parallax, 0, 10);
+		MusicOffset = Mathf.Clamp(MusicOffset, -1000, 1000);
+		FPSLimit = Mathf.Clamp(FPSLimit, 0, 1000);
+		Bloom = Mathf.Clamp(Bloom, 0, 2);
+		if (Volume == null || Volume.Length != 3) Volume = new[] { 25, 25, 25 };
+		for (int i = 0; i < 3; i++) Volume[i] = Mathf.Clamp(Volume[i], 0, 100);
+		if (!System.Text.RegularExpressions.Regex.IsMatch(CursorColor, "^#?[0-9a-fA-F]{6}$")) CursorColor = "ffffff";
+	}
 	public static void UpdateSettings(bool loading = false)
 	{
 		if (loading)
 			LoadSettings();
-		else
-			SaveSettings();
+		Validate();
 		Global.Instance.ViewportChanged();
 		OS.VsyncEnabled = VSync;
 		Engine.TargetFps = FPSLimit;
+		OS.WindowFullscreen = Fullscreen;
 		switch (ApproachMode)
 		{
 			case 0:
@@ -46,6 +104,7 @@ public static class Settings
 				break;
 		}
 		var masterBus = AudioServer.GetBusIndex("Master");
+		SaveSettings();
 		AudioServer.SetBusVolumeDb(masterBus, GD.Linear2Db(Volume[0] / 100f));
 		var musicBus = AudioServer.GetBusIndex("Music");
 		AudioServer.SetBusVolumeDb(musicBus, GD.Linear2Db(Volume[1] / 100f));
@@ -54,18 +113,22 @@ public static class Settings
 	}
 	public static void LoadSettings()
 	{
-		var path = OS.GetUserDataDir().PlusFile("settings.bin");
+		AssetLibrary.Initialize();
+		var path = Global.UserPath.PlusFile("settings.bin");
 		var file = new Godot.File();
 		var settings = new SerializedSettings();
 		settings.SetDefaults();
-		if (file.FileExists(path))
+		if (!System.IO.Directory.Exists(ProfileStore.Root) && file.FileExists(path))
 		{
-			file.Open(path, Godot.File.ModeFlags.Read);
-			var deserializer = new BinaryFormatter();
-			var buffer = file.GetBuffer((long)file.GetLen());
-			var stream = new MemoryStream(buffer);
-			settings = (SerializedSettings)deserializer.Deserialize(stream);
-			file.Close();
+			try
+			{
+				file.Open(path, Godot.File.ModeFlags.Read);
+				if (file.GetLen() > 1024 * 1024) throw new InvalidDataException("Legacy settings are too large.");
+				var deserializer = new BinaryFormatter { Binder = new LegacySettingsBinder() };
+				using (var stream = new MemoryStream(file.GetBuffer((long)file.GetLen()))) settings = (SerializedSettings)deserializer.Deserialize(stream);
+			}
+			catch (Exception e) { GD.PrintErr("Legacy settings could not be migrated: " + e.Message); }
+			finally { file.Close(); }
 		}
 		foreach (FieldInfo field in typeof(SerializedSettings).GetFields())
 		{
@@ -79,19 +142,20 @@ public static class Settings
 				GD.Print($"Failed loading {field.Name}: {e.Message}");
 			}
 		}
+		ProfileStore.Initialize();
 	}
 	public static void SaveSettings()
 	{
-		var writer = new FileStream(OS.GetUserDataDir().PlusFile("settings.bin"), FileMode.Create);
-		var serializer = new BinaryFormatter();
-		var settings = new SerializedSettings();
-		foreach (FieldInfo field in typeof(SerializedSettings).GetFields())
+		ProfileStore.Save();
+	}
+	private sealed class LegacySettingsBinder : SerializationBinder
+	{
+		public override Type BindToType(string assemblyName, string typeName)
 		{
-			field.SetValue(settings, typeof(Settings).GetField(field.Name).GetValue(null));
+			if (typeName == typeof(SerializedSettings).FullName) return typeof(SerializedSettings);
+			if (typeName == "System.Int32[]") return typeof(int[]);
+			throw new SerializationException("Unexpected legacy settings type.");
 		}
-		serializer.Serialize(writer, settings);
-		writer.Flush();
-		writer.Dispose();
 	}
 	[Serializable]
 	private class SerializedSettings

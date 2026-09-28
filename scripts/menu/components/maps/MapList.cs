@@ -18,6 +18,7 @@ public class MapList : Control
 	private Control list;
 	private Control filters;
 	private HSeparator separator;
+	private Label empty;
 	private float scroll = 0;
 	private float scrollf = 0;
 	public int visible { get; private set; } = 0;
@@ -26,6 +27,8 @@ public class MapList : Control
 	public override void _Ready()
 	{
 		content = GetNode<Control>("Content");
+        empty = new Label { Text = "No maps yet. Drop an SSPM or VUL file here, or choose Import maps.", AnchorRight=1, AnchorTop=.5f, AnchorBottom=.5f, Autowrap=true, Align=Label.AlignEnum.Center, MouseFilter=MouseFilterEnum.Ignore }; content.AddChild(empty);
+        ImportCoordinator.Instance.MapsChanged += RefreshMaps;
 		anchor = content.GetNode<Control>("Anchor");
 		list = anchor.GetNode<Control>("List");
 		separator = list.GetNode<HSeparator>("Separator");
@@ -37,6 +40,8 @@ public class MapList : Control
 		filters.GetNode<OptionButton>("Sort").Connect("item_selected", this, nameof(SortChanged));
 		filters.GetNode<OptionButton>("Sort").Selected = Sort;
 	}
+    public override void _ExitTree() { if (ImportCoordinator.Instance != null) ImportCoordinator.Instance.MapsChanged -= RefreshMaps; }
+    public void RefreshMaps() { RootMaps = BeatmapLoader.LoadedMaps; UpdateDisplayed(true); }
 	public override void _Process(float delta)
 	{
 		scrollf += (scroll - scrollf) * delta / 0.1f;
@@ -159,8 +164,10 @@ public class MapList : Control
 			default:
 				break;
 		}
-		if (!render)
-			return;
+		empty.Visible = DisplayedMaps.Count == 0;
+        empty.Text = RootMaps.Count == 0 ? "No maps yet. Drop SSPM / VUL files or choose Import maps." : "No maps match your search.";
+        if (!render)
+            return;
 		RenderButtons();
 	}
 	public void RenderButtons()
