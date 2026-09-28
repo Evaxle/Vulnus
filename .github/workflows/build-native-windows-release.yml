@@ -69,6 +69,12 @@ jobs:
           dotnet build Vulnus.sln --no-restore --configuration Release
           if ($LASTEXITCODE -ne 0) { throw "C# solution build failed with exit code $LASTEXITCODE" }
 
+      - name: Restore and compile C# project
+        shell: pwsh
+        run: |
+          nuget restore Vulnus.sln -NonInteractive
+          msbuild Vulnus.sln /t:Build /p:Configuration=Release /m /v:minimal
+
       - name: Export playable Windows x64 build
         shell: pwsh
         run: |
