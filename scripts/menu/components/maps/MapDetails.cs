@@ -45,11 +45,7 @@ public class MapDetails : View
 		Game.LoadedMapset = currentMap;
 		Game.LoadedMap = currentDifficulty;
 		Game.LoadedMapData = currentDifficulty.Data;
-		Global.Instance.GotoScene("res://scenes/Game.tscn", (Node scn) =>
-		{
-			var menuHandler = GetParent().GetParent<MenuHandler>();
-			menuHandler.GoTo(2);
-		});
+		Global.Instance.GotoScene("res://scenes/Game.tscn");
 	}
 	public void MapSelected(Beatmap map)
 	{
@@ -61,9 +57,10 @@ public class MapDetails : View
 		mapDetails.GetNode<Label>("Title").Text = currentMap.Title;
 		mapDetails.GetNode<Label>("Title/Artist").Text = currentMap.Artist;
 		mapDetails.GetNode<Label>("Title/Mapper").Text = currentMap.Mappers;
-		mapDetails.GetNode<Label>("Difficulty").Text = map.Name;
+		mapDetails.GetNode<Label>("Difficulty").Text = map.Name + "  ·  " + TimeSpan.FromSeconds(currentMap.Length).ToString(@"m\:ss");
 		musicPreview.Stream = currentMap.LoadAudio();
-		musicPreview.Play(musicPreview.Stream.GetLength() / 3f);
+		if (Settings.AutoPreview && musicPreview.Stream != null) musicPreview.Play(musicPreview.Stream.GetLength() / 3f);
+		else musicPreview.Stop();
 		loadingMap = Task.Run(loadMap);
 	}
 	private async void loadMap()

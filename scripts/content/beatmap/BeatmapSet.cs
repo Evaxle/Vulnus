@@ -4,6 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
+using System.Linq;
 using File = Godot.File;
 
 namespace Content.Beatmaps
@@ -35,6 +36,10 @@ namespace Content.Beatmaps
 		[JsonProperty("_mappers")]
 		public List<string> _mappers;
 		public string Mappers => string.Join(", ", _mappers.ToArray());
+		[JsonProperty("_length")]
+        public double Length;
+        [JsonProperty("_cover")]
+        public string CoverFile;
 		[JsonProperty("_music")]
 		public string Music;
 		public static BeatmapSet Load(string json)
@@ -45,45 +50,33 @@ namespace Content.Beatmaps
 		public static BeatmapSet LoadFromPath(string path, string hash)
 		{
 			path = path.Replace("user://", OS.GetUserDataDir());
-			var file = new File();
-			if (file.Open(path.PlusFile("cache.bin"), File.ModeFlags.Read) == Error.Ok)
-			{
-				var deserializer = new BinaryFormatter();
-				var buffer = file.GetBuffer((long)file.GetLen());
-				var stream = new MemoryStream(buffer);
-				var cachedMap = (BeatmapSet)deserializer.Deserialize(stream);
-				cachedMap.Path = path;
-				cachedMap.Hash = hash;
-				foreach (Beatmap difficulty in cachedMap.Difficulties) difficulty.Mapset = cachedMap;
-				return cachedMap;
-			}
-			file.Open(path.PlusFile("meta.json"), File.ModeFlags.Read);
-			var map = BeatmapSet.Load(file.GetAsText());
-			map.Path = path;
-			map.Difficulties = new List<Beatmap>();
-			foreach (string difficulty in map._difficulties)
-			{
-				var diffFile = new File();
-				diffFile.Open(path.PlusFile(difficulty), File.ModeFlags.Read);
-				var diff = JsonConvert.DeserializeObject<Beatmap>(diffFile.GetAsText());
-				diff.Path = difficulty;
-				diff.Mapset = map;
-				map.Difficulties.Add(diff);
-				diffFile.Close();
-			}
-			file.Close();
-			var writer = new FileStream(path.PlusFile("cache.bin"), FileMode.Create);
-			map.SerializeToFile(ref writer);
-			writer.Dispose();
-			map.Hash = hash;
-			return map;
-		}
-		public void SerializeToFile(ref FileStream stream)
-		{
-			var serializer = new BinaryFormatter();
-			serializer.Serialize(stream, this);
-			stream.Flush();
-		}
+            string SafeFile(string name)
+            {
+                if (string.IsNullOrWhiteSpace(name)) throw new InvalidDataException("Missing map filename.");
+                var target = System.IO.Path.GetFullPath(System.IO.Path.Combine(path, name));
+                if (!target.StartsWith(System.IO.Path.GetFullPath(path) + System.IO.Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)) throw new InvalidDataException("Unsafe metadata path.");
+                return target;
+            }
+            var map = Load(System.IO.File.ReadAllText(SafeFile("meta.json")));
+            if (map.FormatVersion != 1 || string.IsNullOrWhiteSpace(map.Title) || map._difficulties == null || map._difficulties.Count == 0 || map._difficulties.Count > 128) throw new InvalidDataException("Invalid map metadata.");
+            map._mappers = map._mappers ?? new List<string>(); map.Artist = map.Artist ?? "";
+            if (!System.IO.File.Exists(SafeFile(map.Music))) throw new InvalidDataException("Map audio is missing.");
+            if (!string.IsNullOrEmpty(map.CoverFile)) SafeFile(map.CoverFile);
+            map.Path = path; map.Hash = hash; map.Difficulties = new List<Beatmap>();
+            double lastNote = 0;
+            foreach (string difficulty in map._difficulties)
+            {
+                string json = System.IO.File.ReadAllText(SafeFile(difficulty));
+                var diff = JsonConvert.DeserializeObject<Beatmap>(json);
+                var data = JsonConvert.DeserializeObject<BeatmapData>(json);
+                if (diff.FormatVersion != 1 || data?.Notes == null || data.Notes.Count == 0 || data.Notes.Count > 2000000 || data.Notes.Any(n => n == null || float.IsNaN(n.T) || float.IsInfinity(n.T) || n.T < 0 || float.IsNaN(n.X) || float.IsNaN(n.Y) || float.IsInfinity(n.X) || float.IsInfinity(n.Y))) throw new InvalidDataException("Invalid difficulty notes.");
+                lastNote = Math.Max(lastNote, data.Notes.Max(n => n.T));
+                diff.Path = difficulty; diff.Mapset = map; diff.Data = data; diff.Playable = true; map.Difficulties.Add(diff);
+            }
+            if (double.IsNaN(map.Length) || double.IsInfinity(map.Length) || map.Length < 0) map.Length = 0;
+            map.Length = Math.Max(map.Length, lastNote);
+            return map;
+        }
 		[NonSerialized]
 		public Texture Cover;
 		public Texture LoadCover()
@@ -91,7 +84,7 @@ namespace Content.Beatmaps
 			if (Cover != null) return Cover;
 			ImageTexture texture;
 			var cover = new Image();
-			var coverPath = "none";
+			var coverPath = !string.IsNullOrEmpty(CoverFile) && System.IO.File.Exists(Path.PlusFile(CoverFile)) ? Path.PlusFile(CoverFile) : "none";
 			foreach (string path in System.IO.Directory.GetFiles(Path))
 			{
 				if (path.GetFile().BaseName().ToLower() == "cover")
@@ -106,7 +99,7 @@ namespace Content.Beatmaps
 				return Global.Matt;
 			}
 			texture = new ImageTexture();
-			cover.Load(coverPath);
+			if (cover.Load(coverPath) != Error.Ok) { Cover = Global.Matt; return Cover; }
 			texture.CreateFromImage(cover);
 			Cover = texture;
 			return texture;

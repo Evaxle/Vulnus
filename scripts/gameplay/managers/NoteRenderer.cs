@@ -25,10 +25,16 @@ namespace Gameplay
 				var note = Notes[i];
 				var noteTime = note.CalculateTime(NoteManager.SyncManager.NoteTime, NoteManager.ApproachTime);
 				var noteDistance = noteTime * Settings.ApproachDistance;
-				Multimesh.SetInstanceTransform(i, new Transform(Basis.Identity, new Vector3(note.X, note.Y, (float)-noteDistance)));
-				Multimesh.SetInstanceColor(i, new Color(note.Color, Mathf.Min(1f, (float)(1f - noteTime) * 4f)));
+				Multimesh.SetInstanceTransform(i, new Transform(Basis.Identity.Scaled(Vector3.One * Settings.NoteScale), new Vector3(note.X, note.Y, (float)-noteDistance)));
+				Multimesh.SetInstanceColor(i, new Color(note.Color, Opacity((float)noteTime, (float)(note.T - NoteManager.SyncManager.NoteTime) / NoteManager.SyncManager.Speed)));
 			}
 		}
+        public static float Opacity(float normalizedTime, float secondsUntilHit)
+        {
+            float fadeIn = Settings.FadeLength <= 0 ? 1 : Mathf.Clamp((1 - normalizedTime) / Settings.FadeLength, 0, 1);
+            float ghost = Settings.HalfGhost ? 0.2f + 0.8f * Mathf.Pow(Mathf.Clamp((secondsUntilHit - 0.06f) / 0.18f, 0, 1), 1.3f) : 1;
+            return Settings.NoteOpacity * fadeIn * ghost;
+        }
 		public void ManualUpdate()
 		{
 			if (Notes.Length > Multimesh.InstanceCount)

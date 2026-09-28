@@ -43,7 +43,7 @@ public class MapsetButton : Control
 		setButton.GetNode<TextureRect>("Cover/Image").Texture = Mapset.LoadCover();
 		setButton.GetNode<Label>("Title").Text = Mapset.Title;
 		setButton.GetNode<Label>("Title/Artist").Text = Mapset.Artist;
-		setButton.GetNode<Label>("Title/Mapper").Text = Mapset.Mappers;
+		setButton.GetNode<Label>("Title/Mapper").Text = Mapset.Mappers + " · " + TimeSpan.FromSeconds(Mapset.Length).ToString(@"m\:ss");
 		if (resetButtons)
 			ResetButtons();
 	}

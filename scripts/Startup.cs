@@ -10,18 +10,21 @@ public class Startup : Node
 	private string text;
 	private float counter;
 	private static bool hasRun = false;
-	private static Task task;
 	public Action<string, bool> StageReached = (string stage, bool end) => { };
 	public override void _Ready()
 	{
+		Global.Instance.RegisterScene(this);
 		label = GetNode<Label>("Label");
+		var args = OS.GetCmdlineArgs();
+		for (int i = 0; i < args.Length - 1; i++)
+			if (args[i] == "--vulnus-test") { AddChild(new IntegrationChecks { Fixtures = args[i + 1] }); return; }
 		if (hasRun)
 			return;
 		hasRun = true;
 		if (TryHandleRhythKitConversion())
 			return;
 		StageReached += OnStageReached;
-		task = Task.Run(Run);
+		CallDeferred(nameof(Run));
 	}
 	private bool TryHandleRhythKitConversion()
 	{
@@ -66,8 +69,6 @@ public class Startup : Node
 		counter += delta;
 		var dots = (int)(counter * 3) % 4;
 		label.Text = text + new string('.', dots);
-		if (task != null && task.IsFaulted)
-			throw task.Exception;
 	}
 	public void LoadMaps()
 	{

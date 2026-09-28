@@ -23,13 +23,19 @@ namespace Gameplay
 		{
 			Input.MouseMode = Input.MouseModeEnum.Visible;
 		}
+		public override void _Process(float delta)
+		{
+			if (Settings.CursorSpin == 0) return;
+			Cursor?.RotateObjectLocal(Vector3.Up, Mathf.Deg2Rad(-Settings.CursorSpin * delta));
+			GhostCursor?.RotateObjectLocal(Vector3.Up, Mathf.Deg2Rad(-Settings.CursorSpin * delta));
+		}
 		public override void _Input(InputEvent @event)
 		{
 			if (!(@event is InputEventMouseMotion))
 				return;
 			var input = @event as InputEventMouseMotion;
 			Rotation = new Vector3(Mathf.Deg2Rad(Pitch), Mathf.Deg2Rad(Yaw), 0);
-			Translation = new Vector3(0, 0, 7) + new Vector3(ClampedCursorPosition.x, ClampedCursorPosition.y, 0) / 4f + Transform.basis.z / 2f;
+			Translation = new Vector3(0, 0, 7) + new Vector3(ClampedCursorPosition.x, ClampedCursorPosition.y, 0) * Settings.Parallax / 4f + Transform.basis.z / 2f;
 			var relative = input.Relative * Settings.MouseSensitivity / 4f;
 			if (Settings.CameraMode == 0)
 			{
@@ -58,7 +64,7 @@ namespace Gameplay
 					return;
 				GhostCursor.Translation = new Vector3(CursorPosition.x, CursorPosition.y, 0);
 				var distance = Mathf.Min(1f, ClampedCursorPosition.DistanceSquaredTo(CursorPosition));
-				((MeshInstance)GhostCursor).MaterialOverride.Set("albedo_color", new Color(1f, 1f, 1f, distance));
+				((MeshInstance)GhostCursor).MaterialOverride.Set("albedo_color", new Color(new Color(Settings.CursorColor), distance * Settings.CursorOpacity));
 			}
 		}
 	}

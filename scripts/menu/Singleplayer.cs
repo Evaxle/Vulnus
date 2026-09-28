@@ -16,7 +16,11 @@ public class Singleplayer : View
 		tween = GetNode<Tween>("Tween");
 		mapList = GetNode<MapList>("MapList");
 		bottomBar = GetNode<Control>("BottomBar");
-		var backBtn = bottomBar.GetNode<Button>("Back");
+		var import = new Button { Text = "Import maps…", AnchorLeft = 1, AnchorRight = 1, MarginLeft = -180, MarginRight = -16, MarginBottom = 40 };
+        bottomBar.AddChild(import); import.Connect("pressed", ImportCoordinator.Instance, nameof(ImportCoordinator.Open));
+        var hint = new Label { Text = "Drop SSPM / VUL files here to import maps", MarginLeft = 200, MarginTop = 12 };
+        bottomBar.AddChild(hint);
+        var backBtn = bottomBar.GetNode<Button>("Back");
 		backBtn.Connect("pressed", menu, nameof(MenuHandler.GoTo), new Godot.Collections.Array(0));
 	}
 	public override void OnShow()
