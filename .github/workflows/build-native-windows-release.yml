@@ -7,6 +7,13 @@ on:
       - main
     paths:
       - ".github/workflows/build-native-windows-release.yml"
+      - "project.godot"
+      - "export_presets.cfg"
+      - "Vulnus.csproj"
+      - "Vulnus.sln"
+      - "scripts/**"
+      - "scenes/**"
+      - "assets/**"
 
 permissions:
   contents: write
