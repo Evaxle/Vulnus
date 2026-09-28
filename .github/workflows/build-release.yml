@@ -55,13 +55,13 @@ jobs:
       - name: Restore and build C# project
         run: |
           nuget restore Vulnus.sln -NonInteractive || true
-          "$GODOT_BIN" --path "$GITHUB_WORKSPACE" --editor --quit
+          "$GODOT_BIN" --path "$GITHUB_WORKSPACE" --build-solutions
 
       - name: Export Windows x64 game
         run: |
           rm -rf build dist
           mkdir -p build dist
-          "$GODOT_BIN" --path "$GITHUB_WORKSPACE" --export-release "Windows Desktop" "$GITHUB_WORKSPACE/build/Vulnus.exe"
+          "$GODOT_BIN" --path "$GITHUB_WORKSPACE" --export "Windows Desktop" "$GITHUB_WORKSPACE/build/Vulnus.exe"
           test -f build/Vulnus.exe
           find build -maxdepth 3 -type f -printf '%P\n' | sort
           (
