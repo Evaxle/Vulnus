@@ -10,8 +10,14 @@ public class Dropdown : Control
 	}
 	public void SetValue(int value)
 	{
-		Value = value;
-		GetNode<OptionButton>("OptionButton").Selected = value;
+		var option = GetNode<OptionButton>("OptionButton");
+		if (option.GetItemCount() == 0)
+		{
+			Value = 0;
+			return;
+		}
+		Value = Mathf.Clamp(value, 0, option.GetItemCount() - 1);
+		option.Selected = Value;
 	}
 	public void OnValueChanged(int value)
 	{
