@@ -86,6 +86,6 @@ jobs:
           else
             gh release create "$RELEASE_TAG" dist/Vulnus-Windows-x64.zip \
               --target "$GITHUB_SHA" \
-              --title "Vulnus Rhythians Windows Build" \
+              --title "Vulnus Rhythians Windows v0.1.0" \
               --notes "Playable Windows x64 build of Vulnus with the Rhythians integration, exported with Godot 3.7-dev1 Mono."
           fi
