@@ -33,7 +33,7 @@ jobs:
           curl -fL "https://downloads.godotengine.org/?flavor=dev1&platform=linux_server.headless.64&slug=mono_linux_headless_64.zip&version=3.7" -o /tmp/godot.zip
           mkdir -p /tmp/godot
           unzip -q /tmp/godot.zip -d /tmp/godot
-          GODOT_BIN="$(find /tmp/godot -type f -name 'Godot*' ! -name '*.pck' | head -n 1)"
+          GODOT_BIN="$(find /tmp/godot -maxdepth 2 -type f -perm -111 -name 'Godot_v3.7-dev1_mono_linux_headless*' | head -n 1)"
           chmod +x "$GODOT_BIN"
           echo "GODOT_BIN=$GODOT_BIN" >> "$GITHUB_ENV"
           "$GODOT_BIN" --version
