@@ -11,7 +11,7 @@ namespace Content.Beatmaps
 {
 	public static class BeatmapLoader
 	{
-		public static List<BeatmapSet> LoadedMaps = new List<BeatmapSet>();
+		public static List<BeatmapSet> LoadedMaps.Clear();
 		public static bool LoadMapsFromDirectory(string directory, bool reset = false)
 		{
 			if (reset)
