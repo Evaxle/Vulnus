@@ -50,9 +50,11 @@ namespace Content.Beatmaps
 						if (!caches.Contains(hash))
 						{
 							mapFile.Open(directory.PlusFile(mapFileName), File.ModeFlags.Read);
-							using var stream = new MemoryStream(mapFile.GetBuffer((long)mapFile.GetLen()));
-							using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
-							zip.ExtractToDirectory(cachePath.PlusFile(hash));
+							using (var stream = new MemoryStream(mapFile.GetBuffer((long)mapFile.GetLen())))
+							using (var zip = new ZipArchive(stream, ZipArchiveMode.Read))
+							{
+								zip.ExtractToDirectory(cachePath.PlusFile(hash));
+							}
 						}
 						try
 						{
