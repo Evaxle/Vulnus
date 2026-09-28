@@ -16,7 +16,7 @@ public class Dropdown : Control
 			Value = 0;
 			return;
 		}
-		Value = Mathf.Clamp(value, 0, option.GetItemCount() - 1);
+		Value = Math.Max(0, Math.Min(value, option.GetItemCount() - 1));
 		option.Selected = Value;
 	}
 	public void OnValueChanged(int value)
