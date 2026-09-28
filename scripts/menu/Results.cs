@@ -24,8 +24,9 @@ public class Results : View
 		info.GetNode<Label>("Accuracy").Text = accuracy > 0 ? String.Format("{0:.##}%", accuracy * 100) : "0%";
 		info.GetNode<Label>("Rank").Text = Score.GetRankForAccuracy(accuracy);
 
-		GetNode<Button>("Retry").Connect("pressed", Global.Instance, nameof(Global.GotoScene), new Godot.Collections.Array("res://scenes/Game.tscn", null));
+		GetNode<Button>("Retry").Connect("pressed", this, nameof(Retry));
 		var menuHandler = GetParent().GetParent<MenuHandler>();
 		GetNode<Button>("Return").Connect("pressed", menuHandler, nameof(MenuHandler.GoTo), new Godot.Collections.Array(1));
 	}
+	public void Retry() => Global.Instance.GotoScene("res://scenes/Game.tscn");
 }

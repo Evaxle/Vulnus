@@ -36,17 +36,29 @@ namespace Gameplay
 			SyncManager = GetNode<SyncManager>("SyncManager");
 			HUDManager = GetNode<HUDManager>("HUD");
 			Score = new Score();
-			CanFail = false;
+			CanFail = true;
 			Ended = false;
 			Camera.Cursor = Cursor;
 			Camera.GhostCursor = GhostCursor;
-			if (LoadedMapset == null || LoadedMapData == null)
+			if (LoadedMapset == null || LoadedMap == null || LoadedMapData?.Notes == null)
 			{
+				Ended = true; Score = null;
 				Global.Instance.GotoScene("res://scenes/MainMenu.tscn");
 				return;
 			}
 			RhythKitBridge.Send("MapStarted", true, LoadedMapset.RhythiansMapId);
-			SyncManager.SetStream(LoadedMapset.LoadAudio());
+			try
+			{
+				var audio = LoadedMapset.LoadAudio();
+				if (audio == null) throw new Exception("Map audio could not be loaded.");
+				SyncManager.SetStream(audio);
+			}
+			catch (Exception e)
+			{
+				GD.PrintErr(e.Message);
+				Ended = true; Score = null;
+				Global.Instance.GotoScene("res://scenes/MainMenu.tscn"); return;
+			}
 			SyncManager.Ended += GameEnded;
 			NoteManager.NoteHit += OnNoteHit;
 			NoteManager.NoteMiss += OnNoteMiss;
@@ -55,15 +67,11 @@ namespace Gameplay
 			if (Mods.Any(m => m is IApplicableToNoteRenderer)) foreach (var mod in Mods.OfType<IApplicableToNoteRenderer>()) mod.ApplyToNoteManager(NoteRenderer);
 			if (Mods.Any(m => m is IApplicableToSyncManager)) foreach (var mod in Mods.OfType<IApplicableToSyncManager>()) mod.ApplyToSyncManager(SyncManager);
 			if (Mods.Any(m => m is IApplicableToHUDManager)) foreach (var mod in Mods.OfType<IApplicableToHUDManager>()) mod.ApplyToHUDManager(HUDManager);
-			Global.Discord.SetActivity(new Discord.ActivityW(
-				state: "Playing a map",
-				details: $"{LoadedMapset.Name} - {LoadedMap.Name}",
-				startTimestamp: DateTime.Now,
-				endTimestamp: DateTime.Now.AddSeconds(SyncManager.AudioPlayer.Stream.GetLength() * SyncManager.Speed)
-			));
 		}
 		public override void _PhysicsProcess(float delta)
 		{
+			if (Ended) return;
+			if (Input.IsActionJustPressed("ui_cancel")) { Score.Failed = true; GameEnded(); return; }
 			if (Input.IsActionJustPressed("skip") && SyncManager.CanSkip()) SyncManager.AttemptSkip();
 			if (Input.IsActionJustPressed("force_end"))
 			{

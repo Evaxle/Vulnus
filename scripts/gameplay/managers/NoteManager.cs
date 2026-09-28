@@ -35,11 +35,11 @@ namespace Gameplay
 			NoteRenderer = GetNode<NoteRenderer>("NoteRenderer");
 			SyncManager = Game.GetNode<SyncManager>("SyncManager");
 			Notes = new List<Note>();
-			var sorted = Game.LoadedMapData.Notes.OrderBy(note => note.T).ToList();
+			var sorted = (Game.LoadedMapData?.Notes ?? new List<NoteData>()).OrderBy(note => note.T).ToList();
 			int mapIndex = 0;
-			foreach (NoteData noteData in Game.LoadedMapData.Notes)
+			foreach (NoteData noteData in sorted)
 			{
-				var i = sorted.IndexOf(noteData);
+				var i = mapIndex;
 				var note = new Note(noteData.X * -2, noteData.Y * 2, noteData.T, i);
 				note.Data = noteData;
 				note.Color = new Color(mapIndex % 2 == 0 ? "#ff0000" : "#00ffff");
@@ -58,6 +58,7 @@ namespace Gameplay
 		}
 		public override void _Process(float delta)
 		{
+			if (Game.Ended) return;
 			ApproachTime = Settings.ApproachTime * SyncManager.Speed;
 			var visibleNotes = Notes.FindAll(note => note.CalculateVisibility(SyncManager.NoteTime, ApproachTime));
 			visibleNotes.TrimExcess();
@@ -66,11 +67,12 @@ namespace Gameplay
 		}
 		public override void _PhysicsProcess(float delta)
 		{
+			if (Game.Ended) return;
 			var visibleNotes = Notes.FindAll(note => note.CalculateTime(SyncManager.NoteTime, ApproachTime) <= 0f && !note.Hit);
 			foreach (Note note in visibleNotes)
 			{
 				bool didHitreg = false;
-				if (note.IsTouching(Camera.ClampedCursorPosition))
+				if (note.InHitWindow(SyncManager.NoteTime, false) && note.IsTouching(Camera.ClampedCursorPosition))
 				{
 					NoteHit(note);
 					didHitreg = true;

@@ -1,6 +1,10 @@
 using Godot;
 using System;
 using System.IO;
+using File = System.IO.File;
+using Directory = System.IO.Directory;
+using Path = System.IO.Path;
+using Environment = System.Environment;
 using Newtonsoft.Json;
 
 public static class RhythKitBridge
@@ -10,6 +14,7 @@ public static class RhythKitBridge
 
     public static void Send(string eventName, bool running, string mapId = null, string clientScoreId = null, double? accuracy = null, int? misses = null, double? speed = null, bool? qualified = null)
     {
+        if (Array.IndexOf(OS.GetCmdlineArgs(), "--smoke-test") >= 0) return;
         try
         {
             Directory.CreateDirectory(DirectoryPath);

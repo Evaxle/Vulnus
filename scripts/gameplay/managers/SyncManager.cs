@@ -35,7 +35,7 @@ namespace Gameplay
 		}
 		public override void _Process(float delta)
 		{
-			if (Game.Ended)
+			if (Game.Ended || AudioPlayer.Stream == null)
 				return;
 			if (!SongPlaying)
 			{
@@ -50,7 +50,7 @@ namespace Gameplay
 			{
 				var songTime = (GetTimeSeconds() - SongPlayingAt) * Speed;
 				SongTime = Math.Max(0.0, songTime - SongPlayingOffset);
-				var difference = SongTime - (AudioPlayer.GetPlaybackPosition() + AudioServer.GetTimeSinceLastMix());
+				var difference = SongTime - (AudioPlayer.GetPlaybackPosition() + AudioServer.GetTimeSinceLastMix() * Speed);
 				if (difference > 0.002)
 				{
 					GD.Print($"Resynced! {Math.Round(difference * 1000)}ms");
@@ -77,6 +77,7 @@ namespace Gameplay
 		}
 		public bool CanSkip()
 		{
+			if (Game.Ended || AudioPlayer.Stream == null) return false;
 			if (NoteManager.LastNote == null || NoteManager.NextNote == null)
 				return SkippableTime() >= 5f * Speed;
 			return SkippableTime() >= 2f * Speed && (NoteManager.NextNote.T - NoteManager.LastNote.T) > 5f * Speed;
@@ -101,7 +102,7 @@ namespace Gameplay
 		}
 		private void PlayAudio()
 		{
-			SongPlayingAt = GetTimeSeconds() - SongTime;
+			SongPlayingAt = GetTimeSeconds() - SongTime / Speed;
 			SongPlayingOffset = GetAudioDelay();
 			AudioPlayer.PitchScale = Speed;
 			AudioPlayer.Play((float)SongTime);

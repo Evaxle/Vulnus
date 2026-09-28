@@ -1,6 +1,10 @@
 using Godot;
 using System;
 using System.IO;
+using File = System.IO.File;
+using Directory = System.IO.Directory;
+using Path = System.IO.Path;
+using Environment = System.Environment;
 using System.IO.Compression;
 using System.Collections.Generic;
 using Newtonsoft.Json;

@@ -14,7 +14,7 @@ namespace Gameplay.Mods
 		public abstract Type[] IncompatibleMods { get; }
 		public bool CompatibleWith(Mod other)
 		{
-			return IncompatibleMods.Any(t => t.IsInstanceOfType(other)) || other.IncompatibleMods.Any(t => t.IsInstanceOfType(this));
+			return !IncompatibleMods.Any(t => t.IsInstanceOfType(other)) && !other.IncompatibleMods.Any(t => t.IsInstanceOfType(this));
 		}
 		public virtual ModType Type { get; } = ModType.Misc;
 		public bool Equals(Mod other)

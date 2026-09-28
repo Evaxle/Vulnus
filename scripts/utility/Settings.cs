@@ -26,8 +26,7 @@ public static class Settings
 	{
 		if (loading)
 			LoadSettings();
-		else
-			SaveSettings();
+		Normalize();
 		Global.Instance.ViewportChanged();
 		OS.VsyncEnabled = VSync;
 		Engine.TargetFps = FPSLimit;
@@ -45,6 +44,7 @@ public static class Settings
 			default:
 				break;
 		}
+		if (!loading) SaveSettings();
 		var masterBus = AudioServer.GetBusIndex("Master");
 		AudioServer.SetBusVolumeDb(masterBus, GD.Linear2Db(Volume[0] / 100f));
 		var musicBus = AudioServer.GetBusIndex("Music");
@@ -58,15 +58,23 @@ public static class Settings
 		var file = new Godot.File();
 		var settings = new SerializedSettings();
 		settings.SetDefaults();
-		if (file.FileExists(path))
-		{
-			file.Open(path, Godot.File.ModeFlags.Read);
-			var deserializer = new BinaryFormatter();
-			var buffer = file.GetBuffer((long)file.GetLen());
-			var stream = new MemoryStream(buffer);
-			settings = (SerializedSettings)deserializer.Deserialize(stream);
-			file.Close();
-		}
+        try
+        {
+            if (file.FileExists(path))
+            {
+                if (file.Open(path, Godot.File.ModeFlags.Read) != Error.Ok) throw new IOException("Cannot open settings.");
+                using (var stream = new MemoryStream(file.GetBuffer((long)file.GetLen())))
+                    settings = (SerializedSettings)new BinaryFormatter().Deserialize(stream);
+                if (settings == null) throw new SerializationException("Empty settings.");
+            }
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr("Using default settings: " + e.Message);
+            settings = new SerializedSettings();
+            settings.SetDefaults();
+        }
+        finally { file.Close(); }
 		foreach (FieldInfo field in typeof(SerializedSettings).GetFields())
 		{
 			try
@@ -80,19 +88,38 @@ public static class Settings
 			}
 		}
 	}
-	public static void SaveSettings()
-	{
-		var writer = new FileStream(OS.GetUserDataDir().PlusFile("settings.bin"), FileMode.Create);
-		var serializer = new BinaryFormatter();
-		var settings = new SerializedSettings();
-		foreach (FieldInfo field in typeof(SerializedSettings).GetFields())
-		{
-			field.SetValue(settings, typeof(Settings).GetField(field.Name).GetValue(null));
-		}
-		serializer.Serialize(writer, settings);
-		writer.Flush();
-		writer.Dispose();
-	}
+    public static void Normalize()
+    {
+        CameraMode = Math.Max(0, Math.Min(1, CameraMode));
+        ApproachMode = Math.Max(0, Math.Min(2, ApproachMode));
+        Bloom = Math.Max(0, Math.Min(2, Bloom));
+        FPSLimit = Math.Max(0, FPSLimit);
+        MouseSensitivity = Positive(MouseSensitivity, 1);
+        ApproachDistance = Positive(ApproachDistance, 50);
+        ApproachTime = Positive(ApproachTime, 1);
+        ApproachRate = Positive(ApproachRate, 50);
+        RenderScale = Mathf.Clamp(Positive(RenderScale, 1), 0.25f, 2);
+        UIScale = Positive(UIScale, 1);
+        if (Volume == null || Volume.Length != 3) Volume = new[] { 25, 25, 25 };
+        for (int i = 0; i < Volume.Length; i++) Volume[i] = Math.Max(0, Math.Min(100, Volume[i]));
+    }
+    private static float Positive(float value, float fallback)
+        => float.IsNaN(value) || float.IsInfinity(value) || value <= 0 ? fallback : value;
+    public static void SaveSettings()
+    {
+        var path = OS.GetUserDataDir().PlusFile("settings.bin");
+        try
+        {
+            var settings = new SerializedSettings();
+            foreach (FieldInfo field in typeof(SerializedSettings).GetFields())
+                field.SetValue(settings, typeof(Settings).GetField(field.Name).GetValue(null));
+            using (var writer = new FileStream(path + ".tmp", FileMode.Create))
+                new BinaryFormatter().Serialize(writer, settings);
+            if (System.IO.File.Exists(path)) System.IO.File.Replace(path + ".tmp", path, null);
+            else System.IO.File.Move(path + ".tmp", path);
+        }
+        catch (Exception e) { GD.PrintErr("Could not save settings: " + e.Message); }
+    }
 	[Serializable]
 	private class SerializedSettings
 	{

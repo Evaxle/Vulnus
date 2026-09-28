@@ -1,78 +1,63 @@
 using Godot;
 using System;
 using System.IO;
+using Path = System.IO.Path;
 using System.IO.Compression;
 using System.Collections.Generic;
-using File = Godot.File;
-using Directory = Godot.Directory;
+using System.Security.Cryptography;
+using File = System.IO.File;
+using Directory = System.IO.Directory;
 using Compatibility.SSP;
 
 namespace Content.Beatmaps
 {
-	public static class BeatmapLoader
-	{
-		public static List<BeatmapSet> LoadedMaps = new List<BeatmapSet>();
-		public static bool LoadMapsFromDirectory(string directory, bool reset = false)
-		{
-			if (reset)
-				LoadedMaps = new List<BeatmapSet>();
-			SspmImporter.ImportDirectory(directory);
-			GD.Print("Loading maps from " + directory);
-			var cachePath = directory.PlusFile(".cache");
-			var cacheDir = new Directory();
-			if (cacheDir.Open(cachePath) != Error.Ok)
-			{
-				cacheDir.MakeDirRecursive(cachePath);
-				cacheDir.Open(cachePath);
-			}
-			List<string> caches = new List<string>();
-			cacheDir.ListDirBegin(true, true);
-			var cacheFileName = cacheDir.GetNext();
-			while (cacheFileName != "")
-			{
-				if (cacheDir.CurrentIsDir()) caches.Add(cacheFileName);
-				cacheFileName = cacheDir.GetNext();
-			}
-			var hashes = new List<string>();
-			var mapsDir = new Directory();
-			mapsDir.Open(directory);
-			mapsDir.ListDirBegin(true, true);
-			var mapFileName = mapsDir.GetNext();
-			var mapFile = new File();
-			while (mapFileName != "")
-			{
-				if (mapFileName.Extension() == "vul")
-				{
-					var hash = mapFile.GetMd5(directory.PlusFile(mapFileName));
-					hashes.Add(hash);
-					if (LoadedMaps.Find(map => map.Hash == hash) == null)
-					{
-						if (!caches.Contains(hash))
-						{
-							mapFile.Open(directory.PlusFile(mapFileName), File.ModeFlags.Read);
-							using var stream = new MemoryStream(mapFile.GetBuffer((long)mapFile.GetLen()));
-							using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
-							zip.ExtractToDirectory(cachePath.PlusFile(hash));
-						}
-						try
-						{
-							var map = BeatmapSet.LoadFromPath(cachePath.PlusFile(hash), hash);
-							LoadedMaps.Add(map);
-						}
-						catch (Exception e)
-						{
-							GD.PrintErr($"{hash}: {e.Message}");
-						}
-					}
-				}
-				mapFileName = mapsDir.GetNext();
-			}
-			foreach (string hash in caches)
-			{
-				if (!hashes.Contains(hash)) System.IO.Directory.Delete(cachePath.PlusFile(hash), true);
-			}
-			if (mapFile.IsOpen()) mapFile.Close();
-			return true;
-		}
-	}
+    public static class BeatmapLoader
+    {
+        public static List<BeatmapSet> LoadedMaps = new List<BeatmapSet>();
+        public static bool LoadMapsFromDirectory(string directory, bool reset = false)
+        {
+            if (reset) LoadedMaps.Clear();
+            if (!Directory.Exists(directory)) return false;
+            try
+            {
+                SspmImporter.ImportDirectory(directory);
+                foreach (var folder in Directory.GetDirectories(directory))
+                    if (File.Exists(Path.Combine(folder, "meta.json"))) TryLoad(folder, Path.GetFullPath(folder));
+                foreach (var file in Directory.GetFiles(directory))
+                {
+                    if (!string.Equals(Path.GetExtension(file), ".vul", StringComparison.OrdinalIgnoreCase)) continue;
+                    try
+                    {
+                        string hash;
+                        using (var md5 = MD5.Create())
+                        using (var input = File.OpenRead(file))
+                            hash = BitConverter.ToString(md5.ComputeHash(input)).Replace("-", "").ToLowerInvariant();
+                        if (LoadedMaps.Exists(map => map.Hash == hash)) continue;
+                        var cache = Path.Combine(Global.MapPath, ".cache", hash);
+                        // A completion marker prevents a failed extraction being mistaken for a valid cache.
+                        if (!File.Exists(Path.Combine(cache, ".complete")))
+                        {
+                            if (Directory.Exists(cache)) Directory.Delete(cache, true);
+                            ZipFile.ExtractToDirectory(file, cache);
+                            File.WriteAllText(Path.Combine(cache, ".complete"), "");
+                        }
+                        TryLoad(cache, hash);
+                    }
+                    catch (Exception e) { GD.PrintErr($"Skipping map {file}: {e.Message}"); }
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
+                GD.PrintErr($"Could not scan maps in {directory}: {e.Message}");
+                return false;
+            }
+        }
+        private static void TryLoad(string path, string hash)
+        {
+            if (LoadedMaps.Exists(map => map.Hash == hash)) return;
+            try { LoadedMaps.Add(BeatmapSet.LoadFromPath(path, hash)); }
+            catch (Exception e) { GD.PrintErr($"Skipping map {path}: {e.Message}"); }
+        }
+    }
 }

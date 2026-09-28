@@ -16,9 +16,6 @@ public class MenuHandler : Control
 		}
 		Views = views;
 		CallDeferred(nameof(GoTo), Gameplay.Game.Score == null ? 0 : 2);
-		Global.Discord.SetActivity(new Discord.ActivityW(
-			startTimestamp: DateTime.Now
-		));
 	}
 	public override void _EnterTree()
 	{

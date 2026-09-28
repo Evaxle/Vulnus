@@ -24,28 +24,33 @@ namespace Content.Beatmaps
 		public string Name;
 		[NonSerialized]
 		public BeatmapData Data;
-		public Error Load()
-		{
-			if (Data != null) return Error.Ok;
-			var file = new File();
-			var err = file.Open(Mapset.Path.PlusFile(Path), File.ModeFlags.Read);
-			GD.Print(Mapset.Hash, " ", err);
-			if (err != Error.Ok)
-				return err;
-			var json = file.GetAsText();
-			var version = JsonConvert.DeserializeObject<BeatmapInfo>(json);
-			BeatmapData data;
-			switch (FormatVersion)
-			{
-				default:
-					data = JsonConvert.DeserializeObject<BeatmapData>(json);
-					break;
-			}
-			this.Playable = FormatVersion <= BeatmapInfo.LatestFormat;
-			this.Data = data;
-			file.Close();
-			return err;
-		}
+        public Error Load()
+        {
+            if (Data != null && Playable) return Error.Ok;
+            Playable = false;
+            try
+            {
+                var json = System.IO.File.ReadAllText(Mapset.ResolveFile(Path));
+                var version = JsonConvert.DeserializeObject<BeatmapInfo>(json);
+                if (version == null || version.FormatVersion > LatestFormat) return Error.FileUnrecognized;
+                var data = JsonConvert.DeserializeObject<BeatmapData>(json);
+                if (data?.Notes == null || data.Notes.Count == 0) return Error.FileCorrupt;
+                foreach (var note in data.Notes)
+                    if (note == null || !Finite(note.X) || !Finite(note.Y) || !Finite(note.T) || note.T < 0)
+                        return Error.FileCorrupt;
+                FormatVersion = version.FormatVersion;
+                Data = data;
+                Playable = true;
+                return Error.Ok;
+            }
+            catch (Exception e)
+            {
+                GD.PrintErr($"Could not load difficulty {Path}: {e.Message}");
+                return Error.FileCorrupt;
+            }
+        }
+        private static bool Finite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
+
 	}
 	public class BeatmapData
 	{

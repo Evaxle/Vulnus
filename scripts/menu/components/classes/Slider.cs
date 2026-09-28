@@ -28,7 +28,10 @@ public class Slider : Control
 	{
 		GetNode<Label>("Label").Text = $"{Label} ({value}{Suffix})";
 		Value = value;
-		GetNode<Godot.Slider>("Slider").Value = value;
+		var input = GetNode<Godot.Slider>("Slider");
+		input.SetBlockSignals(true);
+		input.Value = value;
+		input.SetBlockSignals(false);
 	}
 	public void OnValueChanged(float value)
 	{

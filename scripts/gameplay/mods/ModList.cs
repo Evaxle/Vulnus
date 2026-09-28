@@ -9,10 +9,7 @@ namespace Gameplay.Mods
 	{
 		public new void Add(Mod mod)
 		{
-			foreach (Mod other in this.Where(m => m.GetType() == mod.GetType()))
-				this.Remove(other);
-			foreach (Mod other in this.Where(m => !mod.CompatibleWith(m)))
-				this.Remove(other);
+			RemoveAll(other => other.GetType() == mod.GetType() || !mod.CompatibleWith(other));
 			base.Add(mod);
 		}
 		public new string ToString()

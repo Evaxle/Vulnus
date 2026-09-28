@@ -42,48 +42,41 @@ namespace Content.Beatmaps
 			var version = JsonConvert.DeserializeObject<BeatmapSetInfo>(json);
 			return JsonConvert.DeserializeObject<BeatmapSet>(json);
 		}
-		public static BeatmapSet LoadFromPath(string path, string hash)
-		{
-			path = path.Replace("user://", OS.GetUserDataDir());
-			var file = new File();
-			if (file.Open(path.PlusFile("cache.bin"), File.ModeFlags.Read) == Error.Ok)
-			{
-				var deserializer = new BinaryFormatter();
-				var buffer = file.GetBuffer((long)file.GetLen());
-				var stream = new MemoryStream(buffer);
-				var cachedMap = (BeatmapSet)deserializer.Deserialize(stream);
-				cachedMap.Path = path;
-				cachedMap.Hash = hash;
-				foreach (Beatmap difficulty in cachedMap.Difficulties) difficulty.Mapset = cachedMap;
-				return cachedMap;
-			}
-			file.Open(path.PlusFile("meta.json"), File.ModeFlags.Read);
-			var map = BeatmapSet.Load(file.GetAsText());
-			map.Path = path;
-			map.Difficulties = new List<Beatmap>();
-			foreach (string difficulty in map._difficulties)
-			{
-				var diffFile = new File();
-				diffFile.Open(path.PlusFile(difficulty), File.ModeFlags.Read);
-				var diff = JsonConvert.DeserializeObject<Beatmap>(diffFile.GetAsText());
-				diff.Path = difficulty;
-				diff.Mapset = map;
-				map.Difficulties.Add(diff);
-				diffFile.Close();
-			}
-			file.Close();
-			var writer = new FileStream(path.PlusFile("cache.bin"), FileMode.Create);
-			map.SerializeToFile(ref writer);
-			writer.Dispose();
-			map.Hash = hash;
-			return map;
-		}
-		public void SerializeToFile(ref FileStream stream)
-		{
-			var serializer = new BinaryFormatter();
-			serializer.Serialize(stream, this);
-			stream.Flush();
-		}
+        public static BeatmapSet LoadFromPath(string path, string hash)
+        {
+            var map = Load(System.IO.File.ReadAllText(System.IO.Path.Combine(path, "meta.json")));
+            if (map == null || map.FormatVersion > LatestFormat || map._difficulties == null || map._difficulties.Count == 0)
+                throw new InvalidDataException("Missing difficulties or unsupported map version.");
+            map.Path = path;
+            map.Hash = hash;
+            map.Title = map.Title ?? "Untitled";
+            map.Artist = map.Artist ?? "Unknown";
+            map._mappers = map._mappers ?? new List<string>();
+            map.Difficulties = new List<Beatmap>();
+            foreach (var difficulty in map._difficulties)
+            {
+                try
+                {
+                    var diff = JsonConvert.DeserializeObject<Beatmap>(System.IO.File.ReadAllText(map.ResolveFile(difficulty)));
+                    if (diff == null) throw new InvalidDataException("Empty difficulty.");
+                    diff.Path = difficulty;
+                    diff.Name = diff.Name ?? System.IO.Path.GetFileNameWithoutExtension(difficulty);
+                    diff.Mapset = map;
+                    map.Difficulties.Add(diff);
+                }
+                catch (Exception e) { GD.PrintErr($"Skipping difficulty {difficulty}: {e.Message}"); }
+            }
+            if (map.Difficulties.Count == 0) throw new InvalidDataException("No readable difficulties.");
+            return map;
+        }
+        public string ResolveFile(string relative)
+        {
+            if (string.IsNullOrWhiteSpace(relative)) throw new InvalidDataException("Missing map file path.");
+            var root = System.IO.Path.GetFullPath(Path).TrimEnd(System.IO.Path.DirectorySeparatorChar) + System.IO.Path.DirectorySeparatorChar;
+            var full = System.IO.Path.GetFullPath(System.IO.Path.Combine(root, relative));
+            if (!full.StartsWith(root, StringComparison.OrdinalIgnoreCase)) throw new InvalidDataException("Map file is outside its folder.");
+            return full;
+        }
 		[NonSerialized]
 		public Texture Cover;
 		public Texture LoadCover()
@@ -106,11 +99,19 @@ namespace Content.Beatmaps
 				return Global.Matt;
 			}
 			texture = new ImageTexture();
-			cover.Load(coverPath);
+			var bytes = System.IO.File.ReadAllBytes(coverPath);
+			var result = Error.FileUnrecognized;
+			if (bytes.Length >= 8 && bytes[0] == 0x89 && bytes[1] == 0x50)
+				result = cover.LoadPngFromBuffer(bytes);
+			else if (bytes.Length >= 3 && bytes[0] == 0xff && bytes[1] == 0xd8)
+				result = cover.LoadJpgFromBuffer(bytes);
+			else if (bytes.Length >= 12 && System.Text.Encoding.ASCII.GetString(bytes, 8, 4) == "WEBP")
+				result = cover.LoadWebpFromBuffer(bytes);
+			if (result != Error.Ok) { Cover = Global.Matt; return Cover; }
 			texture.CreateFromImage(cover);
 			Cover = texture;
 			return texture;
 		}
-		public AudioStream LoadAudio() => AudioHandler.LoadAudio(Path.PlusFile(Music));
+		public AudioStream LoadAudio() => AudioHandler.LoadAudio(ResolveFile(Music));
 	}
 }
