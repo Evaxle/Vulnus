@@ -2,6 +2,7 @@ using Godot;
 using System;
 
 using Gameplay;
+using Content.Beatmaps;
 
 public class Singleplayer : View
 {
@@ -21,7 +22,7 @@ public class Singleplayer : View
 	}
 	public override void OnShow()
 	{
-		// base.OnShow();
+		mapList.RootMaps = BeatmapLoader.LoadedMaps;
 		mapList.UpdateDisplayed(false);
 		if (Game.Score != null)
 		{
@@ -29,7 +30,9 @@ public class Singleplayer : View
 			mapList.SelectedMap = Game.LoadedMap;
 			mapList.RenderButtons();
 			mapList.MapSelected(Game.LoadedMap);
-			mapList.Scroll(mapList.DisplayedMaps.IndexOf(Game.LoadedMapset) - (Mathf.Floor(mapList.visible / 2f) - 2), true);
+			var index = mapList.DisplayedMaps.IndexOf(Game.LoadedMapset);
+			if (index >= 0)
+				mapList.Scroll(index - (Mathf.Floor(mapList.visible / 2f) - 2), true);
 		}
 		else
 			mapList.RenderButtons();
@@ -41,7 +44,6 @@ public class Singleplayer : View
 	}
 	public override async void OnHide()
 	{
-		// base.OnHide();
 		tween.RemoveAll();
 		tween.InterpolateProperty(this, "modulate:a", 1, 0, 0.3f, Tween.TransitionType.Quart, Tween.EaseType.Out);
 		tween.InterpolateProperty(bottomBar, "margin_top", -48, 0, 0.2f, Tween.TransitionType.Sine, Tween.EaseType.Out);

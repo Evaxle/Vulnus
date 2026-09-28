@@ -8,7 +8,7 @@ public static class RhythKitBridge
     private static readonly string DirectoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CapoRhythia", "Rhythians", "bridge");
     private static readonly string EventPath = Path.Combine(DirectoryPath, "events-vulnus.jsonl");
 
-    public static void Send(string eventName, bool running, string mapId = null, string clientScoreId = null, double? accuracy = null, int? misses = null, double? speed = null, bool? qualified = null)
+    public static void Send(string eventName, bool running, string mapId = null, string clientScoreId = null, double? accuracy = null, int? misses = null, double? speed = null, bool? qualified = null, string cameraMode = null)
     {
         try
         {
@@ -27,7 +27,9 @@ public static class RhythKitBridge
                 Misses = misses,
                 Speed = speed,
                 CompletedAt = DateTimeOffset.UtcNow,
-                ResultQualified = qualified
+                ResultQualified = qualified,
+                CameraMode = cameraMode == "spin" ? "spin" : cameraMode == null ? null : "lock",
+                PointSystem = cameraMode == "spin" ? "RPS" : cameraMode == null ? null : "RPL"
             };
             File.AppendAllText(EventPath, JsonConvert.SerializeObject(payload) + Environment.NewLine);
         }
