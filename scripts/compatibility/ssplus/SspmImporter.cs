@@ -280,7 +280,7 @@ namespace Compatibility.SSP
         {
             if (string.IsNullOrWhiteSpace(id) || notes.Count == 0) return null;
             IODirectory.CreateDirectory(Global.MapPath);
-            var output = Global.MapIOPath.PlusFile("rhythians_" + Sanitize(id) + ".vul");
+            var output = Global.MapPath.PlusFile("rhythians_" + Sanitize(id) + ".vul");
             var temp = output + ".tmp";
             if (IOFile.Exists(temp)) IOFile.Delete(temp);
             using (var stream = IOFile.Create(temp))
