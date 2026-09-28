@@ -139,6 +139,12 @@ public class Options : View
 		}
 	}
 
+	public void OpenAccount()
+	{
+		GetNode<TabContainer>("Content").CurrentTab = 3;
+		SetActive(true);
+	}
+
 	public override async void OnShow()
 	{
 		if (moving || IsActive)
