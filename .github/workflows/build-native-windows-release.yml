@@ -23,7 +23,8 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 20
     env:
-      RELEASE_TAG: "v0.1.0-rhythians"
+      RELEASE_TAG: "v0.1.1-rhythians"
+      OLD_RELEASE_TAG: "v0.1.0-rhythians"
       GODOT_TEMPLATE_DIR: "3.7.dev1.mono"
     steps:
       - name: Checkout
@@ -54,6 +55,10 @@ jobs:
             Copy-Item "$inner\*" $dest -Recurse -Force
           } else {
             Copy-Item "$unpack\*" $dest -Recurse -Force
+          }
+          if ($env:OLD_RELEASE_TAG -and $env:OLD_RELEASE_TAG -ne $env:RELEASE_TAG) {
+            gh release delete $env:OLD_RELEASE_TAG --cleanup-tag -y 2>$null
+            if ($LASTEXITCODE -ne 0) { Write-Warning "Could not delete old release $env:OLD_RELEASE_TAG." }
           }
           Get-ChildItem $dest | Select-Object -ExpandProperty Name
 
@@ -130,5 +135,5 @@ jobs:
           if ($LASTEXITCODE -eq 0) {
             gh release upload $env:RELEASE_TAG "dist/Vulnus-Windows-x64.zip" --clobber
           } else {
-            gh release create $env:RELEASE_TAG "dist/Vulnus-Windows-x64.zip" --target "$env:GITHUB_SHA" --title "Vulnus Rhythians Windows v0.1.0" --notes "Playable Windows x64 build of Vulnus with Rhythians integration, exported natively on Windows with Godot 3.7-dev1 Mono."
+            gh release create $env:RELEASE_TAG "dist/Vulnus-Windows-x64.zip" --target "$env:GITHUB_SHA" --title "Vulnus Rhythians Windows v0.1.1" --notes "Playable Windows x64 build with SSPM drag-and-drop importing, separate Lock and Parallax camera modes, map thumbnail fixes, corrected settings, and the Vulnus quit icon. Exported natively on Windows with Godot 3.7-dev1 Mono."
           }
