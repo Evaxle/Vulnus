@@ -1,8 +1,7 @@
 using Godot;
 using System;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
+using System.Threading.Tasks;
 
 using Content.Beatmaps;
 
@@ -118,23 +117,21 @@ namespace Gameplay
 			Ended = true;
 			SyncManager.AudioPlayer.Stop();
 			var mapId = LoadedMapset == null ? null : LoadedMapset.RhythiansMapId;
+			var cameraMode = Settings.CameraMode == 0 ? "spin" : "lock";
 			if (!string.IsNullOrWhiteSpace(mapId) && Score.Total > 0)
 			{
 				var accuracy = (double)(Score.Total - Score.Misses) / Score.Total * 100.0;
 				accuracy = Math.Max(0, Math.Min(100, accuracy));
-				var scoreKey = $"vulnus:{mapId}:{Score.Points}:{Score.Total}:{Score.Misses}:{Score.HighestCombo}";
-				using (var sha = SHA256.Create())
-				{
-					var hash = sha.ComputeHash(Encoding.UTF8.GetBytes(scoreKey));
-					var clientScoreId = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-					RhythKitBridge.Send("MapCompleted", true, mapId, clientScoreId, accuracy, Score.Misses, SyncManager.Speed, !Score.Failed);
-				}
+				var clientScoreId = Guid.NewGuid().ToString();
+				var qualified = !Score.Failed;
+				RhythKitBridge.Send("MapCompleted", true, mapId, clientScoreId, accuracy, Score.Misses, SyncManager.Speed, qualified, cameraMode);
+				if (qualified && RhythiansApi.IsAuthenticated)
+					Task.Run(() => RhythiansApi.SubmitScore(mapId, clientScoreId, accuracy, Score.Misses, SyncManager.Speed, cameraMode));
 			}
 			else
 			{
-				RhythKitBridge.Send("MapEnded", true, mapId);
+				RhythKitBridge.Send("MapEnded", true, mapId, null, null, null, null, null, cameraMode);
 			}
 			Global.Instance.GotoScene("res://scenes/MainMenu.tscn");
-		}
-	}
+		}	}
 }
