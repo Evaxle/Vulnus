@@ -89,9 +89,7 @@ namespace Content.Beatmaps
 		public Texture LoadCover()
 		{
 			if (Cover != null) return Cover;
-			ImageTexture texture;
-			var cover = new Image();
-			var coverPath = "none";
+			var coverPath = "";
 			foreach (string path in System.IO.Directory.GetFiles(Path))
 			{
 				if (path.GetFile().BaseName().ToLower() == "cover")
@@ -100,16 +98,38 @@ namespace Content.Beatmaps
 					break;
 				}
 			}
-			if (coverPath == "none")
+			if (string.IsNullOrEmpty(coverPath))
+				return LoadFallbackCover();
+			var cover = new Image();
+			var error = cover.Load(coverPath);
+			if (error != Error.Ok)
 			{
-				Cover = Global.Matt;
-				return Global.Matt;
+				var file = new File();
+				if (file.Open(coverPath, File.ModeFlags.Read) != Error.Ok)
+					return LoadFallbackCover();
+				var buffer = file.GetBuffer((long)file.GetLen());
+				file.Close();
+				if (buffer.Length >= 8 &&
+					buffer[0] == 0x89 && buffer[1] == 0x50 && buffer[2] == 0x4E && buffer[3] == 0x47)
+					error = cover.LoadPngFromBuffer(buffer);
+				else if (buffer.Length >= 3 && buffer[0] == 0xFF && buffer[1] == 0xD8 && buffer[2] == 0xFF)
+					error = cover.LoadJpgFromBuffer(buffer);
+				else if (buffer.Length >= 12 &&
+					buffer[0] == 0x52 && buffer[1] == 0x49 && buffer[2] == 0x46 && buffer[3] == 0x46 &&
+					buffer[8] == 0x57 && buffer[9] == 0x45 && buffer[10] == 0x42 && buffer[11] == 0x50)
+					error = cover.LoadWebpFromBuffer(buffer);
 			}
-			texture = new ImageTexture();
-			cover.Load(coverPath);
+			if (error != Error.Ok)
+				return LoadFallbackCover();
+			var texture = new ImageTexture();
 			texture.CreateFromImage(cover);
 			Cover = texture;
-			return texture;
+			return Cover;
+		}
+		private Texture LoadFallbackCover()
+		{
+			Cover = (Texture)GD.Load("res://assets/images/vulnus.png");
+			return Cover;
 		}
 		public AudioStream LoadAudio() => AudioHandler.LoadAudio(Path.PlusFile(Music));
 	}
