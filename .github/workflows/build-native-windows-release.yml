@@ -66,14 +66,14 @@ jobs:
         shell: pwsh
         run: |
           dotnet restore Vulnus.sln
-          dotnet build Vulnus.sln --no-restore --configuration Release
+          dotnet build Vulnus.sln --no-restore --configuration ExportRelease
           if ($LASTEXITCODE -ne 0) { throw "C# solution build failed with exit code $LASTEXITCODE" }
 
       - name: Restore and compile C# project
         shell: pwsh
         run: |
           nuget restore Vulnus.sln -NonInteractive
-          msbuild Vulnus.sln /t:Build /p:Configuration=Release /m /v:minimal
+          msbuild Vulnus.sln /t:Build /p:Configuration=ExportRelease /m /v:minimal
 
       - name: Export playable Windows x64 build
         shell: pwsh
