@@ -26,9 +26,11 @@ public static class Settings
 	{
 		if (loading)
 			LoadSettings();
-		else
+		Sanitize();
+		if (!loading)
 			SaveSettings();
-		Global.Instance.ViewportChanged();
+		if (Global.Instance != null)
+			Global.Instance.ViewportChanged();
 		OS.VsyncEnabled = VSync;
 		Engine.TargetFps = FPSLimit;
 		switch (ApproachMode)
@@ -52,6 +54,24 @@ public static class Settings
 		var sfxBus = AudioServer.GetBusIndex("SFX");
 		AudioServer.SetBusVolumeDb(sfxBus, GD.Linear2Db(Volume[2] / 100f));
 	}
+	private static void Sanitize()
+	{
+		CameraMode = Math.Max(0, Math.Min(2, CameraMode));
+		MouseSensitivity = Mathf.Clamp(MouseSensitivity, 0.01f, 10f);
+		ApproachMode = Math.Max(0, Math.Min(2, ApproachMode));
+		ApproachDistance = Mathf.Max(0.1f, ApproachDistance);
+		ApproachTime = Mathf.Max(0.01f, ApproachTime);
+		ApproachRate = Mathf.Max(0.01f, ApproachRate);
+		if (Volume == null || Volume.Length != 3)
+			Volume = new int[3] { 25, 25, 25 };
+		for (var i = 0; i < Volume.Length; i++)
+			Volume[i] = Math.Max(0, Math.Min(100, Volume[i]));
+		RenderScale = Mathf.Clamp(RenderScale <= 0f ? 1f : RenderScale, 0.05f, 2f);
+		UIScale = Mathf.Clamp(UIScale <= 0f ? 1f : UIScale, 0.5f, 2f);
+		Bloom = Math.Max(0, Math.Min(2, Bloom));
+		FPSLimit = Math.Max(0, Math.Min(1000, FPSLimit));
+	}
+
 	public static void LoadSettings()
 	{
 		var path = OS.GetUserDataDir().PlusFile("settings.bin");
