@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Content.Beatmaps;
+using Compatibility.SSP;
 
 public sealed class RhythiansDeviceLogin
 {
@@ -24,9 +25,13 @@ public sealed class RhythiansMapInfo
 	public string Title;
 	public string Artist;
 	public string Mapper;
+	public string ImageUrl;
 	public double? Rating;
+	public int LengthSeconds;
+	public int NoteCount;
 	public bool IsRanked;
 	public bool IsLegacy;
+	public bool ScoreEligible;
 	public string SourceStatus;
 	public bool HasScore;
 	public bool Passed;
@@ -36,6 +41,31 @@ public sealed class RhythiansMapInfo
 
 	public string StatusLabel => IsLegacy ? "LEGACY" : IsRanked ? "RANKED" : "UNRANKED";
 	public bool Completed => HasScore || Passed;
+	public bool Installed => RhythiansApi.IsMapInstalled(Id);
+}
+
+public sealed class RhythiansCatalogPage
+{
+	public List<RhythiansMapInfo> Maps = new List<RhythiansMapInfo>();
+	public int Offset;
+	public int Limit;
+	public int Total;
+	public bool HasMore;
+	public int NextOffset;
+}
+
+public sealed class RhythiansScoreResult
+{
+	public bool Success;
+	public string Error;
+	public int Points;
+	public int Gained;
+	public int Rhp;
+	public int Rpl;
+	public int Rps;
+	public int Rpvr;
+	public bool Ranked;
+	public string CameraMode;
 }
 
 public static class RhythiansApi
@@ -50,7 +80,10 @@ public static class RhythiansApi
 	public static string Username { get; private set; }
 	public static string InstallationId { get; private set; }
 	public static string LastError { get; private set; }
+	public static RhythiansScoreResult LastScoreResult { get; private set; }
 	public static bool IsAuthenticated => !string.IsNullOrWhiteSpace(Token);
+	public static Action AccountChanged = () => { };
+	public static Action CatalogChanged = () => { };
 
 	public static void Initialize()
 	{
@@ -65,7 +98,7 @@ public static class RhythiansApi
 		}
 		catch
 		{
-			Logout();
+			ClearLocalAuth();
 		}
 	}
 
@@ -78,17 +111,20 @@ public static class RhythiansApi
 			var result = GetJson("status");
 			if (result == null || result.Value<bool?>("ok") != true)
 			{
-				Logout();
+				ClearLocalAuth();
 				return false;
 			}
 			Username = result.Value<string>("username") ?? Username;
 			InstallationId = result.Value<string>("installationId") ?? InstallationId;
 			SaveAuth();
+			AccountChanged();
 			return true;
 		}
 		catch (Exception e)
 		{
 			LastError = e.Message;
+			if (e.Message.IndexOf("Unauthorized", StringComparison.OrdinalIgnoreCase) >= 0)
+				ClearLocalAuth();
 			return false;
 		}
 	}
@@ -97,7 +133,8 @@ public static class RhythiansApi
 	{
 		try
 		{
-			var result = PostJson("device/start", new JObject());
+			LastError = null;
+			var result = PostJson("device/start", new JObject { ["client"] = "vulnus" }, false);
 			if (result == null || result.Value<bool?>("ok") != true)
 			{
 				LastError = result?.Value<string>("error") ?? "Unable to start Rhythians login.";
@@ -123,6 +160,7 @@ public static class RhythiansApi
 		pending = false;
 		try
 		{
+			LastError = null;
 			var result = PostJson("device/poll", new JObject { ["deviceCode"] = deviceCode }, false);
 			if (result == null)
 				return false;
@@ -145,6 +183,7 @@ public static class RhythiansApi
 				return false;
 			}
 			SaveAuth();
+			AccountChanged();
 			return true;
 		}
 		catch (Exception e)
@@ -155,6 +194,21 @@ public static class RhythiansApi
 	}
 
 	public static void Logout()
+	{
+		if (IsAuthenticated)
+		{
+			try
+			{
+				PostJson("logout", new JObject());
+			}
+			catch
+			{
+			}
+		}
+		ClearLocalAuth();
+	}
+
+	private static void ClearLocalAuth()
 	{
 		Token = null;
 		Username = null;
@@ -168,6 +222,60 @@ public static class RhythiansApi
 		catch
 		{
 		}
+		AccountChanged();
+		CatalogChanged();
+	}
+
+	public static RhythiansCatalogPage FetchCatalogPage(string query, int offset = 0, int limit = 40)
+	{
+		if (!IsAuthenticated)
+		{
+			LastError = "Log in to Rhythians to browse the map catalog.";
+			return null;
+		}
+		try
+		{
+			LastError = null;
+			offset = Math.Max(0, offset);
+			limit = Math.Max(1, Math.Min(100, limit));
+			var path = "maps?limit=" + limit + "&offset=" + offset;
+			if (!string.IsNullOrWhiteSpace(query))
+				path += "&q=" + Uri.EscapeDataString(query.Trim());
+			var result = GetJson(path);
+			if (result == null || result.Value<bool?>("ok") != true)
+				throw new Exception(result?.Value<string>("error") ?? "Rhythians catalog request failed.");
+			var page = new RhythiansCatalogPage
+			{
+				Offset = result.Value<int?>("offset") ?? offset,
+				Limit = result.Value<int?>("limit") ?? limit,
+				Total = result.Value<int?>("total") ?? 0,
+				HasMore = result.Value<bool?>("hasMore") == true,
+				NextOffset = result["nextOffset"] == null || result["nextOffset"].Type == JTokenType.Null
+					? -1
+					: result.Value<int>("nextOffset")
+			};
+			var maps = result["maps"] as JArray;
+			if (maps != null)
+			{
+				foreach (var token in maps)
+				{
+					var map = ParseMap(token as JObject);
+					if (map == null)
+						continue;
+					page.Maps.Add(map);
+					lock (CatalogLock)
+						Catalog[map.Id] = map;
+				}
+			}
+			CatalogChanged();
+			return page;
+		}
+		catch (Exception e)
+		{
+			LastError = e.Message;
+			GD.PrintErr("Rhythians catalog error: " + e.Message);
+			return null;
+		}
 	}
 
 	public static bool SyncMaps(bool downloadMissing)
@@ -176,38 +284,20 @@ public static class RhythiansApi
 			return false;
 		try
 		{
-			var next = 0;
-			var downloaded = false;
+			var offset = 0;
 			var fresh = new Dictionary<string, RhythiansMapInfo>(StringComparer.OrdinalIgnoreCase);
-			while (next >= 0)
+			while (offset >= 0)
 			{
-				var result = GetJson("maps?limit=100&offset=" + next);
-				if (result == null || result.Value<bool?>("ok") != true)
-				throw new Exception(result?.Value<string>("error") ?? "Rhythians map sync failed.");
-				var maps = result["maps"] as JArray;
-				if (maps == null)
-					break;
-				foreach (var token in maps)
+				var page = FetchCatalogPage("", offset, 100);
+				if (page == null)
+					return false;
+				foreach (var map in page.Maps)
 				{
-					var map = ParseMap(token as JObject);
-					if (map == null)
-						continue;
 					fresh[map.Id] = map;
-					if (downloadMissing)
-					{
-						try
-						{
-							if (EnsureMapDownloaded(map.Id))
-								downloaded = true;
-						}
-						catch (Exception e)
-						{
-							GD.PrintErr("Rhythians map download skipped for " + map.Id + ": " + e.Message);
-						}
-					}
+					if (downloadMissing && !map.Installed)
+						DownloadMap(map.Id);
 				}
-				var nextToken = result["nextOffset"];
-				next = nextToken == null || nextToken.Type == JTokenType.Null ? -1 : nextToken.Value<int>();
+				offset = page.HasMore ? page.NextOffset : -1;
 			}
 			lock (CatalogLock)
 			{
@@ -215,8 +305,7 @@ public static class RhythiansApi
 				foreach (var pair in fresh)
 					Catalog[pair.Key] = pair.Value;
 			}
-			if (downloadMissing || downloaded)
-				BeatmapLoader.LoadMapsFromDirectory(Global.MapPath, true);
+			CatalogChanged();
 			return true;
 		}
 		catch (Exception e)
@@ -238,12 +327,85 @@ public static class RhythiansApi
 		}
 	}
 
-	public static bool SubmitScore(string mapId, string clientScoreId, double accuracy, int misses, double speed, string cameraMode)
+	public static bool IsMapInstalled(string id)
 	{
-		if (!IsAuthenticated || string.IsNullOrWhiteSpace(mapId))
+		if (string.IsNullOrWhiteSpace(id))
 			return false;
+		var target = Global.MapPath.PlusFile("rhythians_" + Sanitize(id) + ".vul");
+		if (File.Exists(target))
+			return true;
 		try
 		{
+			foreach (var map in BeatmapLoader.LoadedMaps)
+				if (string.Equals(map.RhythiansMapId, id, StringComparison.OrdinalIgnoreCase))
+					return true;
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	public static bool DownloadMap(string id)
+	{
+		if (!IsAuthenticated || string.IsNullOrWhiteSpace(id))
+			return false;
+		if (IsMapInstalled(id))
+			return true;
+		var tempPath = Global.MapPath.PlusFile(".rhythians_" + Sanitize(id) + ".download.sspm");
+		try
+		{
+			LastError = null;
+			using (var request = CreateRequest(HttpMethod.Get, "maps/" + Uri.EscapeDataString(id) + "/download"))
+			using (var response = Client.SendAsync(request).GetAwaiter().GetResult())
+			{
+				if (!response.IsSuccessStatusCode)
+				throw new Exception("Map download failed: HTTP " + (int)response.StatusCode + ".");
+				var bytes = response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+				if (bytes == null || bytes.Length < 6)
+					throw new Exception("Rhythians returned an empty map file.");
+				var magic = BitConverter.ToUInt32(bytes, 0);
+				if (magic != 0x6D2B5353)
+					throw new Exception("Rhythians returned an invalid SSPM file.");
+				File.WriteAllBytes(tempPath, bytes);
+			}
+			var converted = SspmImporter.Import(tempPath, id);
+			if (string.IsNullOrWhiteSpace(converted) || !File.Exists(converted))
+				throw new Exception("Vulnus could not convert the downloaded SSPM map.");
+			CatalogChanged();
+			return true;
+		}
+		catch (Exception e)
+		{
+			LastError = e.Message;
+			GD.PrintErr("Rhythians map download error for " + id + ": " + e.Message);
+			return false;
+		}
+		finally
+		{
+			try
+			{
+				if (File.Exists(tempPath))
+					File.Delete(tempPath);
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	public static RhythiansScoreResult SubmitScore(string mapId, string clientScoreId, double accuracy, int misses, double speed, string cameraMode, IList<double> missTimes = null)
+	{
+		var scoreResult = new RhythiansScoreResult { Success = false, CameraMode = cameraMode == "spin" ? "spin" : "lock" };
+		if (!IsAuthenticated || string.IsNullOrWhiteSpace(mapId))
+		{
+			scoreResult.Error = "Log in to Rhythians before submitting scores.";
+			LastScoreResult = scoreResult;
+			return scoreResult;
+		}
+		try
+		{
+			LastError = null;
 			var payload = new JObject
 			{
 				["challengeMapId"] = mapId,
@@ -254,16 +416,23 @@ public static class RhythiansApi
 				["resultQualified"] = true,
 				["completedAt"] = DateTimeOffset.UtcNow.ToString("o"),
 				["gameVersion"] = "Vulnus",
-				["integrationVersion"] = "rhythians-v1",
-				["cameraMode"] = cameraMode == "spin" ? "spin" : "lock",
+				["integrationVersion"] = "rhythians-v2",
+				["cameraMode"] = scoreResult.CameraMode,
 				["modifiers"] = "Vulnus"
 			};
+			if (missTimes != null && missTimes.Count == misses)
+				payload["missTimes"] = new JArray(missTimes);
 			var result = PostJson("scores", payload);
 			if (result == null || result.Value<bool?>("ok") != true)
-			{
-				LastError = result?.Value<string>("error") ?? "Score submission failed.";
-				return false;
-			}
+				throw new Exception(result?.Value<string>("error") ?? "Score submission failed.");
+			scoreResult.Success = true;
+			scoreResult.Points = result.Value<int?>("points") ?? 0;
+			scoreResult.Gained = result.Value<int?>("gained") ?? 0;
+			scoreResult.Rhp = result.Value<int?>("rhp") ?? 0;
+			scoreResult.Rpl = result.Value<int?>("rpl") ?? 0;
+			scoreResult.Rps = result.Value<int?>("rps") ?? 0;
+			scoreResult.Rpvr = result.Value<int?>("rpvr") ?? 0;
+			scoreResult.Ranked = result.Value<bool?>("ranked") == true;
 			lock (CatalogLock)
 			{
 				RhythiansMapInfo map;
@@ -273,33 +442,17 @@ public static class RhythiansApi
 					map.Passed = true;
 				}
 			}
-			return true;
+			LastScoreResult = scoreResult;
+			CatalogChanged();
+			return scoreResult;
 		}
 		catch (Exception e)
 		{
 			LastError = e.Message;
+			scoreResult.Error = e.Message;
+			LastScoreResult = scoreResult;
 			GD.PrintErr("Rhythians score submission error: " + e.Message);
-			return false;
-		}
-	}
-
-	private static bool EnsureMapDownloaded(string id)
-	{
-		var safe = Sanitize(id);
-		var sspmPath = Global.MapPath.PlusFile("rhythians_" + safe + ".sspm");
-		var vulPath = Global.MapPath.PlusFile("rhythians_" + safe + ".vul");
-		if (File.Exists(sspmPath) || File.Exists(vulPath))
-			return false;
-		using (var request = CreateRequest(HttpMethod.Get, "maps/" + Uri.EscapeDataString(id) + "/download"))
-		using (var response = Client.SendAsync(request).GetAwaiter().GetResult())
-		{
-			if (!response.IsSuccessStatusCode)
-				throw new Exception("Map download failed for " + id + ": HTTP " + (int)response.StatusCode);
-			var bytes = response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
-			if (bytes == null || bytes.Length == 0)
-				throw new Exception("Map download returned an empty file for " + id + ".");
-			File.WriteAllBytes(sspmPath, bytes);
-			return true;
+			return scoreResult;
 		}
 	}
 
@@ -316,9 +469,13 @@ public static class RhythiansApi
 			Title = json.Value<string>("title") ?? "Unknown",
 			Artist = json.Value<string>("artist") ?? "Unknown Artist",
 			Mapper = json.Value<string>("mapper") ?? "Unknown",
+			ImageUrl = json.Value<string>("imageUrl"),
 			Rating = json["rating"] == null || json["rating"].Type == JTokenType.Null ? (double?)null : json.Value<double?>("rating"),
+			LengthSeconds = json.Value<int?>("length") ?? 0,
+			NoteCount = json.Value<int?>("noteCount") ?? json.Value<int?>("notes") ?? 0,
 			IsRanked = json.Value<bool?>("isRanked") == true,
 			IsLegacy = json.Value<bool?>("isLegacy") == true,
+			ScoreEligible = json.Value<bool?>("scoreEligible") == true,
 			SourceStatus = json.Value<string>("sourceStatus") ?? "unranked",
 			HasScore = json.Value<bool?>("hasScore") == true,
 			Passed = completion?.Value<bool?>("passed") == true,
@@ -348,7 +505,7 @@ public static class RhythiansApi
 	private static HttpRequestMessage CreateRequest(HttpMethod method, string path, bool authenticated = true)
 	{
 		var request = new HttpRequestMessage(method, path);
-		request.Headers.UserAgent.ParseAdd("Vulnus/1.0 Rhythians/1.0");
+		request.Headers.UserAgent.ParseAdd("Vulnus/1.1 Rhythians/2.0");
 		request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 		if (authenticated && IsAuthenticated)
 			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
