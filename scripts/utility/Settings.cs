@@ -288,7 +288,7 @@ public static class Settings
 				NoteColorA = "#" + colors[0].Groups[1].Value;
 				NoteColorB = "#" + colors[1].Groups[1].Value;
 			}
-			var cursorMatch = Regex.Match(combined, @"(?i)(?:CursorColor|cursor_color|CursorColour)\s*[:=]\s*[\""']?#?([0-9a-f]{6})");
+			var cursorMatch = Regex.Match(combined, "(?i)(?:CursorColor|cursor_color|CursorColour)\\s*[:=]\\s*[\\\"']?#?([0-9a-f]{6})");
 			if (cursorMatch.Success) CursorColor = "#" + cursorMatch.Groups[1].Value;
 			UpdateSettings();
 			return ar.HasValue || ad.HasValue || sensitivity.HasValue || parallax.HasValue || fieldOfView.HasValue || colors.Count >= 2;
@@ -304,7 +304,7 @@ public static class Settings
 	{
 		foreach (var name in names)
 		{
-			var pattern = @"(?im)[\""']?" + Regex.Escape(name) + @"[\""']?\s*[:=]\s*[\""']?(-?\d+(?:\.\d+)?)";
+			var pattern = "(?im)[\\\"']?" + Regex.Escape(name) + "[\\\"']?\\s*[:=]\\s*[\\\"']?(-?\\d+(?:\\.\\d+)?)";
 			var match = Regex.Match(text, pattern);
 			float value;
 			if (match.Success && float.TryParse(match.Groups[1].Value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out value))
