@@ -15,6 +15,11 @@ namespace Compatibility.SSP
     {
         public static string Import(string path)
         {
+            return Import(path, null);
+        }
+
+        public static string Import(string path, string overrideId)
+        {
             try
             {
                 using (var stream = IOFile.OpenRead(path))
@@ -23,13 +28,13 @@ namespace Compatibility.SSP
                     if (reader.ReadUInt32() != 0x6D2B5353) return null;
                     var version = reader.ReadUInt16();
                     stream.Position = 0;
-                    if (version == 1) return ImportV1(reader);
+                    if (version == 1) return ImportV1(reader, overrideId);
                     if (version == 2)
                     {
-                        var full = ImportV2(reader);
+                        var full = ImportV2(reader, overrideId);
                         if (full != null) return full;
                         stream.Position = 0;
-                        return ImportV2OptimizedFromStart(reader);
+                        return ImportV2OptimizedFromStart(reader, overrideId);
                     }
                     return null;
                 }
@@ -79,12 +84,13 @@ namespace Compatibility.SSP
             catch { return null; }
         }
 
-        private static string ImportV1(BinaryReader reader)
+        private static string ImportV1(BinaryReader reader, string overrideId)
         {
             reader.ReadUInt32();
             reader.ReadUInt16();
             reader.ReadUInt16();
             var id = ReadLine(reader) ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(overrideId)) id = overrideId;
             var mapName = ReadLine(reader) ?? id;
             var mapper = ReadLine(reader) ?? "Unknown";
             reader.ReadUInt32();
@@ -120,7 +126,7 @@ namespace Compatibility.SSP
             return WriteVulnus(id, artist, title, mapper, difficulty, notes, audio, cover);
         }
 
-        private static string ImportV2(BinaryReader reader)
+        private static string ImportV2(BinaryReader reader, string overrideId)
         {
             reader.ReadUInt32();
             reader.ReadUInt16();
@@ -145,6 +151,7 @@ namespace Compatibility.SSP
             var markersOffset = reader.ReadUInt64();
             reader.ReadUInt64();
             var id = ReadString(reader);
+            if (!string.IsNullOrWhiteSpace(overrideId)) id = overrideId;
             var mapName = ReadString(reader);
             ReadString(reader);
             var mapperCount = reader.ReadUInt16();
@@ -206,7 +213,7 @@ namespace Compatibility.SSP
             return WriteVulnus(id, artist, title, string.Join(" & ", mappers), difficulty, notes, audio, cover);
         }
 
-        private static string ImportV2OptimizedFromStart(BinaryReader reader)
+        private static string ImportV2OptimizedFromStart(BinaryReader reader, string overrideId)
         {
             reader.ReadUInt32();
             reader.ReadUInt16();
