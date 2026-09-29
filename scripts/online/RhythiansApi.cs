@@ -457,8 +457,13 @@ public static class RhythiansApi
 				{
 					map.HasScore = true;
 					map.Passed = true;
+					if (scoreResult.CameraMode == "spin")
+						map.SpinScore = Math.Max(map.SpinScore, scoreResult.Points);
+					else
+						map.LockScore = Math.Max(map.LockScore, scoreResult.Points);
 				}
 			}
+			SaveCatalogCache();
 			LastScoreResult = scoreResult;
 			CatalogChanged();
 			return scoreResult;
