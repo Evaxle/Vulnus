@@ -410,7 +410,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 56.0
 custom_fonts/font = SubResource( 1 )
-text = "Singleplayer"
+text = "Play"
 valign = 1
 
 [node name="Downloads" type="Button" parent="ViewContainer/MainMenu/Sidebar/Buttons"]
@@ -440,7 +440,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 56.0
 custom_fonts/font = SubResource( 1 )
-text = "Download Maps"
+text = "Maps Catalog"
 valign = 1
 
 [node name="Options" type="Button" parent="ViewContainer/MainMenu/Sidebar/Buttons"]
