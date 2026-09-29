@@ -297,7 +297,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = -128.0
 text = "Spin"
-items = [ "Spin", null, false, 1, null, "Lock", null, false, 2, null, "Parallax", null, false, 3, null ]
+items = [ "Spin", null, false, 1, null, "Full Lock", null, false, 2, null, "Parallax", null, false, 3, null ]
 selected = 0
 
 [node name="Sensitivity" type="Control" parent="Content/Gameplay/Grid/Camera/VBoxContainer"]
