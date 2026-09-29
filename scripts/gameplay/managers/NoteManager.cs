@@ -42,8 +42,9 @@ namespace Gameplay
 				var i = sorted.IndexOf(noteData);
 				var note = new Note(noteData.X * -2, noteData.Y * 2, noteData.T, i);
 				note.Data = noteData;
-				var colors = Settings.NoteColors == null || Settings.NoteColors.Length == 0 ? new string[] { "#ff0000", "#00ffff" } : Settings.NoteColors;
-				note.Color = new Color(colors[mapIndex % colors.Length]);
+				var colorA = Settings.ParseColor(Settings.NoteColorA, new Color("#ff0000"));
+				var colorB = Settings.ParseColor(Settings.NoteColorB, new Color("#00ffff"));
+				note.Color = mapIndex % 2 == 0 ? colorA : colorB;
 				if (Game.Mods.Any(m => m is IApplicableToNote))
 				{
 					foreach (var mod in Game.Mods.OfType<IApplicableToNote>())
