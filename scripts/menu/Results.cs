@@ -6,6 +6,8 @@ using Gameplay;
 public class Results : View
 {
 	private Label rhythiansStatus;
+	private RhythiansScoreResult shownResult;
+
 	public override void _Ready()
 	{
 		if (Game.Score == null)
@@ -25,26 +27,19 @@ public class Results : View
 		info.GetNode<Label>("Accuracy").Text = accuracy > 0 ? String.Format("{0:.##}%", accuracy * 100) : "0%";
 		info.GetNode<Label>("Rank").Text = Score.GetRankForAccuracy(accuracy);
 
-		if (Game.LoadedMapset != null && !string.IsNullOrWhiteSpace(Game.LoadedMapset.RhythiansMapId))
-		{
-			rhythiansStatus = new Label();
-			rhythiansStatus.Name = "RhythiansStatus";
-			rhythiansStatus.AnchorLeft = 0.5f;
-			rhythiansStatus.AnchorRight = 0.5f;
-			rhythiansStatus.AnchorTop = 0.5f;
-			rhythiansStatus.AnchorBottom = 0.5f;
-			rhythiansStatus.MarginLeft = -320f;
-			rhythiansStatus.MarginTop = 145f;
-			rhythiansStatus.MarginRight = 320f;
-			rhythiansStatus.MarginBottom = 176f;
-			AddChild(rhythiansStatus);
-			if (Game.Score.Failed)
-				rhythiansStatus.Text = "Rhythians: run failed, score not submitted.";
-			else if (!RhythiansApi.IsAuthenticated)
-				rhythiansStatus.Text = "Rhythians: log in to submit eligible scores.";
-			else
-				rhythiansStatus.Text = "Rhythians: submitting score...";
-		}
+		rhythiansStatus = new Label();
+		rhythiansStatus.AnchorLeft = 0.5f;
+		rhythiansStatus.AnchorTop = 0.5f;
+		rhythiansStatus.AnchorRight = 0.5f;
+		rhythiansStatus.AnchorBottom = 0.5f;
+		rhythiansStatus.MarginLeft = -288f;
+		rhythiansStatus.MarginTop = 145f;
+		rhythiansStatus.MarginRight = 288f;
+		rhythiansStatus.MarginBottom = 175f;
+		rhythiansStatus.Align = Label.AlignEnum.Center;
+		rhythiansStatus.Valign = Label.VAlign.Center;
+		AddChild(rhythiansStatus);
+		UpdateRhythiansStatus();
 
 		GetNode<Button>("Retry").Connect("pressed", Global.Instance, nameof(Global.GotoScene), new Godot.Collections.Array("res://scenes/Game.tscn", null));
 		var menuHandler = GetParent().GetParent<MenuHandler>();
@@ -53,18 +48,48 @@ public class Results : View
 
 	public override void _Process(float delta)
 	{
-		if (rhythiansStatus == null || Game.Score == null || Game.Score.Failed || !RhythiansApi.IsAuthenticated)
-			return;
-		var result = RhythiansApi.LastScoreResult;
-		if (result == null)
-			return;
-		if (!result.Success)
+		var current = RhythiansApi.LastScoreResult;
+		if (current != shownResult)
+			UpdateRhythiansStatus();
+	}
+
+	private void UpdateRhythiansStatus()
+	{
+		if (rhythiansStatus == null || Game.Score == null) return;
+		shownResult = RhythiansApi.LastScoreResult;
+		if (Game.Score.Failed)
 		{
-			rhythiansStatus.Text = "Rhythians: score submission failed — " + (result.Error ?? "unknown error");
+			rhythiansStatus.Text = "Failed run — not submitted to Rhythians.";
 			return;
 		}
-		var pointsName = result.CameraMode == "spin" ? "RPS" : "RPL";
-		var total = result.CameraMode == "spin" ? result.Rps : result.Rpl;
-		rhythiansStatus.Text = "Rhythians: submitted • " + result.Points + " score points • " + pointsName + " " + total;
+		if (Game.LoadedMapset == null || string.IsNullOrWhiteSpace(Game.LoadedMapset.RhythiansMapId))
+		{
+			rhythiansStatus.Text = "Local map — no Rhythians score submission.";
+			return;
+		}
+		if (!RhythiansApi.IsAuthenticated)
+		{
+			rhythiansStatus.Text = "Log in to Rhythians to submit eligible scores.";
+			return;
+		}
+		if (!RhythiansApi.HasLinkedRhythia)
+		{
+			rhythiansStatus.Text = "Link your Rhythia profile on rhythians.com to submit scores.";
+			return;
+		}
+		if (shownResult == null)
+		{
+			rhythiansStatus.Text = "Submitting score to Rhythians...";
+			return;
+		}
+		if (!shownResult.Success)
+		{
+			rhythiansStatus.Text = "Rhythians submission failed: " + (shownResult.Error ?? "unknown error");
+			return;
+		}
+		var system = shownResult.CameraMode == "spin" ? "RPS" : "RPL";
+		rhythiansStatus.Text = shownResult.Ranked
+			? "Rhythians accepted · +" + shownResult.Gained + " " + system + " · " + shownResult.Points + " stored"
+			: "Rhythians accepted this pass · no rank points awarded.";
 	}
 }
