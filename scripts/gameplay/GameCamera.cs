@@ -67,12 +67,12 @@ namespace Gameplay
 				return;
 
 			var input = (InputEventMouseMotion)@event;
-			var relative = input.Relative * Settings.MouseSensitivity / 4f;
 
 			if (Settings.CameraMode == 0)
 			{
-				Yaw = Mathf.Wrap(Yaw - relative.x, -180f, 180f);
-				Pitch = Mathf.Clamp(Pitch - relative.y, -90f, 90f);
+				var spinRelative = input.Relative * Settings.MouseSensitivity * 0.2f;
+				Yaw = Mathf.Wrap(Yaw - spinRelative.x, -180f, 180f);
+				Pitch = Mathf.Clamp(Pitch - spinRelative.y, -90f, 90f);
 				Rotation = new Vector3(Mathf.Deg2Rad(Pitch), Mathf.Deg2Rad(Yaw), 0);
 				UpdateCameraTransform();
 				var position = new Vector2(Translation.x, Translation.y);
@@ -85,7 +85,7 @@ namespace Gameplay
 				Yaw = 0f;
 				Pitch = 0f;
 				Rotation = Vector3.Zero;
-				CursorPosition += new Vector2(relative.x, -relative.y) * 0.1675f;
+				CursorPosition += new Vector2(input.Relative.x, -input.Relative.y) * (0.036f * Settings.MouseSensitivity);
 			}
 
 			ClampedCursorPosition = new Vector2(
