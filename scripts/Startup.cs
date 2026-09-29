@@ -58,7 +58,7 @@ public class Startup : Node
 		{
 			StageReached("Syncing Rhythians maps", false);
 			if (RhythiansApi.ValidateSession())
-				RhythiansApi.SyncMaps(true);
+				RhythiansApi.SyncMaps(false);
 		}
 		StageReached("Adding overlays", false);
 		Global.Instance.AddOverlay();
