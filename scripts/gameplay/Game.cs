@@ -25,12 +25,13 @@ namespace Gameplay
 		public HUDManager HUDManager;
 		public bool Ended;
 		public bool CanFail;
-		public bool Paused { get; private set; }
-		private List<double> missTimes;
+		private bool paused;
 		private CanvasLayer pauseLayer;
+		private List<double> missTimes;
 
 		public override void _Ready()
 		{
+			PauseMode = PauseModeEnum.Process;
 			Camera = GetNode<GameCamera>("Camera");
 			Cursor = GetNode<Spatial>("Cursor");
 			GhostCursor = GetNode<Spatial>("GhostCursor");
@@ -40,13 +41,13 @@ namespace Gameplay
 			HUDManager = GetNode<HUDManager>("HUD");
 			Score = new Score();
 			missTimes = new List<double>();
-			CanFail = false;
+			CanFail = true;
 			Ended = false;
-			Paused = false;
+			paused = false;
 			Camera.Cursor = Cursor;
 			Camera.GhostCursor = GhostCursor;
+			Camera.ApplyVisualSettings();
 			BuildPauseMenu();
-			ApplyAppearance();
 			if (LoadedMapset == null || LoadedMapData == null)
 			{
 				Global.Instance.GotoScene("res://scenes/MainMenu.tscn");
@@ -64,32 +65,21 @@ namespace Gameplay
 			if (Mods.Any(m => m is IApplicableToHUDManager)) foreach (var mod in Mods.OfType<IApplicableToHUDManager>()) mod.ApplyToHUDManager(HUDManager);
 		}
 
-		public override void _Input(InputEvent @event)
-		{
-			if (!(@event is InputEventKey)) return;
-			var key = (InputEventKey)@event;
-			if (!key.Pressed || key.Echo) return;
-			if (key.Scancode == (uint)KeyList.Escape || key.Scancode == (uint)KeyList.P)
-			{
-				TogglePause();
-				GetTree().SetInputAsHandled();
-				return;
-			}
-			if (key.Scancode == (uint)KeyList.R)
-			{
-				ExitMap();
-				GetTree().SetInputAsHandled();
-			}
-		}
-
 		public override void _PhysicsProcess(float delta)
 		{
-			if (Paused || Ended) return;
+			if (Ended) return;
+			if (Input.IsActionJustPressed("pause") || Input.IsActionJustPressed("force_end"))
+			{
+				TogglePause();
+				return;
+			}
+			if (paused) return;
 			if (Input.IsActionJustPressed("skip") && SyncManager.CanSkip()) SyncManager.AttemptSkip();
-			if (Score.Health <= 0)
+			if (Score.Health <= 0 && !Score.Failed)
 			{
 				Score.Failed = true;
-				if (CanFail) GameEnded();
+				if (CanFail)
+					FailMap();
 			}
 		}
 
@@ -102,136 +92,123 @@ namespace Gameplay
 
 		public override void _ExitTree()
 		{
+			if (GetTree().Paused) GetTree().Paused = false;
 			Options opt = (Options)Global.Instance.Overlays["Options"];
 			opt.CanOpen = true;
-			Input.MouseMode = Input.MouseModeEnum.Visible;
 		}
 
 		private void BuildPauseMenu()
 		{
 			pauseLayer = new CanvasLayer();
-			pauseLayer.Layer = 100;
+			pauseLayer.Name = "PauseMenu";
+			pauseLayer.PauseMode = PauseModeEnum.Process;
 			pauseLayer.Visible = false;
 			AddChild(pauseLayer);
 
 			var shade = new ColorRect();
-			shade.AnchorRight = 1;
-			shade.AnchorBottom = 1;
+			shade.AnchorRight = 1f;
+			shade.AnchorBottom = 1f;
 			shade.Color = new Color(0, 0, 0, 0.78f);
+			shade.PauseMode = PauseModeEnum.Process;
 			pauseLayer.AddChild(shade);
 
-			var panel = new VBoxContainer();
+			var panel = new Panel();
 			panel.AnchorLeft = 0.5f;
 			panel.AnchorTop = 0.5f;
 			panel.AnchorRight = 0.5f;
 			panel.AnchorBottom = 0.5f;
-			panel.MarginLeft = -180;
-			panel.MarginTop = -120;
-			panel.MarginRight = 180;
-			panel.MarginBottom = 120;
-			panel.AddConstantOverride("separation", 12);
+			panel.MarginLeft = -190;
+			panel.MarginTop = -150;
+			panel.MarginRight = 190;
+			panel.MarginBottom = 150;
+			panel.PauseMode = PauseModeEnum.Process;
 			shade.AddChild(panel);
 
+			var layout = new VBoxContainer();
+			layout.AnchorRight = 1f;
+			layout.AnchorBottom = 1f;
+			layout.MarginLeft = 24;
+			layout.MarginTop = 24;
+			layout.MarginRight = -24;
+			layout.MarginBottom = -24;
+			layout.AddConstantOverride("separation", 12);
+			layout.PauseMode = PauseModeEnum.Process;
+			panel.AddChild(layout);
+
 			var title = new Label();
-			title.Text = "PAUSED";
-			title.RectMinSize = new Vector2(0, 56);
+			title.Text = "Paused";
 			title.Align = Label.AlignEnum.Center;
-			title.Valign = Label.VAlign.Center;
-			panel.AddChild(title);
+			title.RectMinSize = new Vector2(0, 52);
+			layout.AddChild(title);
 
-			var resume = new Button();
-			resume.Text = "RESUME";
-			resume.RectMinSize = new Vector2(0, 48);
-			resume.Connect("pressed", this, nameof(TogglePause));
-			panel.AddChild(resume);
-
-			var restart = new Button();
-			restart.Text = "RESTART MAP";
-			restart.RectMinSize = new Vector2(0, 48);
-			restart.Connect("pressed", this, nameof(RestartMap));
-			panel.AddChild(restart);
-
-			var exit = new Button();
-			exit.Text = "EXIT MAP";
-			exit.RectMinSize = new Vector2(0, 48);
-			exit.Connect("pressed", this, nameof(ExitMap));
-			panel.AddChild(exit);
-
-			var hint = new Label();
-			hint.Text = "Esc/P: pause  •  R: exit map";
-			hint.Align = Label.AlignEnum.Center;
-			panel.AddChild(hint);
+			AddPauseButton(layout, "RESUME", nameof(ResumeMap));
+			AddPauseButton(layout, "RESTART MAP", nameof(RestartMap));
+			AddPauseButton(layout, "EXIT MAP", nameof(ExitMap));
 		}
 
-		public void TogglePause()
+		private void AddPauseButton(VBoxContainer parent, string text, string method)
 		{
-			if (Ended) return;
-			Paused = !Paused;
-			pauseLayer.Visible = Paused;
-			if (SyncManager != null && SyncManager.AudioPlayer != null)
-				SyncManager.AudioPlayer.StreamPaused = Paused;
-			Input.MouseMode = Paused ? Input.MouseModeEnum.Visible : Input.MouseModeEnum.Captured;
+			var button = new Button();
+			button.Text = text;
+			button.RectMinSize = new Vector2(0, 52);
+			button.PauseMode = PauseModeEnum.Process;
+			button.Connect("pressed", this, method);
+			parent.AddChild(button);
+		}
+
+		private void TogglePause()
+		{
+			if (paused) ResumeMap();
+			else PauseMap();
+		}
+
+		public void PauseMap()
+		{
+			if (Ended || paused) return;
+			paused = true;
+			Settings.AnyPause = true;
+			pauseLayer.Visible = true;
+			Input.MouseMode = Input.MouseModeEnum.Visible;
+			GetTree().Paused = true;
+		}
+
+		public void ResumeMap()
+		{
+			if (!paused) return;
+			GetTree().Paused = false;
+			paused = false;
+			pauseLayer.Visible = false;
+			Input.MouseMode = Input.MouseModeEnum.Captured;
 		}
 
 		public void RestartMap()
 		{
-			if (Ended) return;
-			Ended = true;
-			Paused = false;
-			if (SyncManager != null && SyncManager.AudioPlayer != null)
-				SyncManager.AudioPlayer.Stop();
-			Score = null;
+			GetTree().Paused = false;
+			paused = false;
+			Settings.AnyPause = true;
 			Global.Instance.GotoScene("res://scenes/Game.tscn");
 		}
 
 		public void ExitMap()
 		{
-			if (Ended) return;
+			GetTree().Paused = false;
+			paused = false;
+			Settings.AnyPause = true;
 			Ended = true;
-			Paused = false;
-			if (SyncManager != null && SyncManager.AudioPlayer != null)
-				SyncManager.AudioPlayer.Stop();
-			var mapId = LoadedMapset == null ? null : LoadedMapset.RhythiansMapId;
-			var cameraMode = Settings.CameraMode == 0 ? "spin" : "lock";
-			RhythKitBridge.Send("MapEnded", true, mapId, null, null, null, null, false, cameraMode);
+			SyncManager.AudioPlayer.Stop();
+			RhythKitBridge.Send("MapEnded", true, LoadedMapset == null ? null : LoadedMapset.RhythiansMapId, null, null, null, false, null, Settings.CameraMode == 0 ? "spin" : "lock");
 			Score = null;
 			Global.Instance.GotoScene("res://scenes/MainMenu.tscn");
 		}
 
-		private void ApplyAppearance()
+		private void FailMap()
 		{
-			ApplyCursorAppearance(Cursor as MeshInstance, false);
-			ApplyCursorAppearance(GhostCursor as MeshInstance, true);
-			var scale = new Vector3(Settings.CursorScale, Settings.CursorScale, Settings.CursorScale);
-			if (Cursor != null) Cursor.Scale = scale;
-			if (GhostCursor != null) GhostCursor.Scale = scale;
-		}
-
-		private void ApplyCursorAppearance(MeshInstance mesh, bool ghost)
-		{
-			if (mesh == null) return;
-			SpatialMaterial material = null;
-			var active = mesh.GetActiveMaterial(0) as SpatialMaterial;
-			if (active != null)
-				material = active.Duplicate() as SpatialMaterial;
-			if (material == null)
-				material = new SpatialMaterial();
-			material.FlagsTransparent = true;
-			var color = new Color(Settings.CursorColor);
-			color.a = ghost ? Math.Min(0.6f, Settings.CursorOpacity) : Settings.CursorOpacity;
-			material.AlbedoColor = color;
-			var cursorPath = Settings.ResolveCursorPath();
-			if (!string.IsNullOrWhiteSpace(cursorPath))
-			{
-				var image = new Image();
-				if (image.Load(cursorPath) == Error.Ok)
-				{
-					var texture = new ImageTexture();
-					texture.CreateFromImage(image);
-					material.AlbedoTexture = texture;
-				}
-			}
-			mesh.MaterialOverride = material;
+			if (Ended) return;
+			Ended = true;
+			SyncManager.AudioPlayer.Stop();
+			Input.MouseMode = Input.MouseModeEnum.Visible;
+			RhythKitBridge.Send("MapCompleted", true, LoadedMapset == null ? null : LoadedMapset.RhythiansMapId, null, 0, Score.Misses, SyncManager.Speed, false, Settings.CameraMode == 0 ? "spin" : "lock");
+			Global.Instance.GotoScene("res://scenes/MainMenu.tscn");
 		}
 
 		public void OnNoteHit(Note note)
@@ -266,7 +243,6 @@ namespace Gameplay
 		{
 			if (Ended) return;
 			Ended = true;
-			Paused = false;
 			SyncManager.AudioPlayer.Stop();
 			var mapId = LoadedMapset == null ? null : LoadedMapset.RhythiansMapId;
 			var cameraMode = Settings.CameraMode == 0 ? "spin" : "lock";
