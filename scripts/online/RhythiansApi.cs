@@ -394,6 +394,11 @@ public static class RhythiansApi
 		}
 	}
 
+	public static void ResetScoreResult()
+	{
+		LastScoreResult = null;
+	}
+
 	public static RhythiansScoreResult SubmitScore(string mapId, string clientScoreId, double accuracy, int misses, double speed, string cameraMode, IList<double> missTimes = null)
 	{
 		var scoreResult = new RhythiansScoreResult { Success = false, CameraMode = cameraMode == "spin" ? "spin" : "lock" };
