@@ -258,7 +258,7 @@ namespace Gameplay
 				var clientScoreId = Guid.NewGuid().ToString();
 				var qualified = !Score.Failed;
 				RhythKitBridge.Send("MapCompleted", true, mapId, clientScoreId, accuracy, Score.Misses, SyncManager.Speed, qualified, cameraMode);
-				if (qualified && RhythiansApi.IsAuthenticated)
+				if (qualified && RhythiansApi.IsAuthenticated && RhythiansApi.HasLinkedRhythia)
 				{
 					RhythiansApi.ResetScoreResult();
 					var submittedMissTimes = missTimes.ToArray();
