@@ -245,7 +245,10 @@ public class Options : View
 		input.Text = value;
 		input.RectMinSize = new Vector2(170, 32);
 		input.Connect("text_entered", this, method);
-		input.Connect("focus_exited", this, method + "Focus");
+		var focusMethod = method == nameof(OnNoteColorAChanged) ? nameof(OnNoteColorAFocus)
+			: method == nameof(OnNoteColorBChanged) ? nameof(OnNoteColorBFocus)
+			: nameof(OnCursorColorFocus);
+		input.Connect("focus_exited", this, focusMethod);
 		row.AddChild(input);
 		return input;
 	}
