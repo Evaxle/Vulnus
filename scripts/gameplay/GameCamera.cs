@@ -20,6 +20,7 @@ namespace Gameplay
 			CursorPosition = new Vector2();
 			ClampedCursorPosition = new Vector2();
 			Input.MouseMode = Input.MouseModeEnum.Captured;
+			Fov = Settings.CameraFov;
 			UpdateCameraTransform();
 		}
 
@@ -28,18 +29,25 @@ namespace Gameplay
 			Input.MouseMode = Input.MouseModeEnum.Visible;
 		}
 
+		public override void _Process(float delta)
+		{
+			Fov = Settings.CameraFov;
+			UpdateCameraTransform();
+		}
+
 		public override void _Input(InputEvent @event)
 		{
+			var game = GetParent<Game>();
+			if (game != null && game.Paused)
+				return;
 			if (!(@event is InputEventMouseMotion))
 				return;
 
 			var input = (InputEventMouseMotion)@event;
-			var relative = input.Relative * Settings.MouseSensitivity / 4f;
-
 			if (Settings.CameraMode == 0)
 			{
-				Yaw = Mathf.Wrap(Yaw - relative.x, -180f, 180f);
-				Pitch = Mathf.Clamp(Pitch - relative.y, -90f, 90f);
+				Yaw = Mathf.Wrap(Yaw - input.Relative.x * Settings.MouseSensitivity * 0.2f, -180f, 180f);
+				Pitch = Mathf.Clamp(Pitch - input.Relative.y * Settings.MouseSensitivity * 0.2f, -89f, 89f);
 				Rotation = new Vector3(Mathf.Deg2Rad(Pitch), Mathf.Deg2Rad(Yaw), 0);
 				UpdateCameraTransform();
 				var position = new Vector2(Translation.x, Translation.y);
@@ -52,7 +60,7 @@ namespace Gameplay
 				Yaw = 0f;
 				Pitch = 0f;
 				Rotation = Vector3.Zero;
-				CursorPosition += new Vector2(relative.x, -relative.y) * 0.1675f;
+				CursorPosition += new Vector2(input.Relative.x, -input.Relative.y) * (0.018f * Settings.MouseSensitivity);
 			}
 
 			ClampedCursorPosition = new Vector2(
@@ -75,7 +83,9 @@ namespace Gameplay
 				{
 					GhostCursor.Translation = new Vector3(CursorPosition.x, CursorPosition.y, 0);
 					var distance = Mathf.Min(1f, ClampedCursorPosition.DistanceSquaredTo(CursorPosition));
-					((MeshInstance)GhostCursor).MaterialOverride.Set("albedo_color", new Color(1f, 1f, 1f, distance));
+					var material = ((MeshInstance)GhostCursor).MaterialOverride as SpatialMaterial;
+					if (material != null)
+						material.AlbedoColor = new Color(Settings.CursorColor) { a = distance * Settings.CursorOpacity };
 				}
 			}
 		}
@@ -84,9 +94,7 @@ namespace Gameplay
 		{
 			var basePosition = new Vector3(0, 0, 7) + Transform.basis.z / 2f;
 			if (Settings.CameraMode == 2)
-				basePosition += new Vector3(ClampedCursorPosition.x, ClampedCursorPosition.y, 0) / 4f;
-			else if (Settings.CameraMode == 0)
-				basePosition += new Vector3(ClampedCursorPosition.x, ClampedCursorPosition.y, 0) / 4f;
+				basePosition += new Vector3(ClampedCursorPosition.x * Settings.Parallax, ClampedCursorPosition.y * Settings.Parallax, 0);
 			Translation = basePosition;
 		}
 	}
