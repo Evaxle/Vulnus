@@ -20,34 +20,28 @@ namespace Gameplay
 
 		public override void _Process(float delta)
 		{
-			if (NoteManager.Game.Paused)
-				return;
+			var fadeFraction = Mathf.Clamp(Settings.FadeLength / 100f, 0f, 1f);
 			for (int i = 0; i < Notes.Length; i++)
 			{
 				var note = Notes[i];
-				var normalized = note.CalculateTime(NoteManager.SyncManager.NoteTime, NoteManager.ApproachTime);
-				var noteDistance = normalized * Settings.ApproachDistance;
-				var basis = Basis.Identity.Scaled(Vector3.One * Settings.NoteSize);
+				var noteTime = note.CalculateTime(NoteManager.SyncManager.NoteTime, NoteManager.ApproachTime);
+				var noteDistance = noteTime * Settings.ApproachDistance;
+				var scale = Settings.NoteScale;
+				var basis = Basis.Identity.Scaled(new Vector3(scale, scale, scale));
 				Multimesh.SetInstanceTransform(i, new Transform(basis, new Vector3(note.X, note.Y, (float)-noteDistance)));
 
-				var aheadSeconds = Math.Max(0.0, normalized * NoteManager.ApproachTime);
-				var elapsedSinceSpawn = Math.Max(0.0, NoteManager.ApproachTime - aheadSeconds);
-				var fadeSeconds = Settings.FadeLength * NoteManager.SyncManager.Speed;
-				var fadeIn = fadeSeconds <= 0.0001
-					? 1f
-					: Mathf.Pow(Mathf.Clamp((float)(elapsedSinceSpawn / fadeSeconds), 0f, 1f), 1.3f);
-				var fadeOut = 1f;
+				var progress = Mathf.Clamp(1f - (float)noteTime, 0f, 1f);
+				var fadeOpacity = fadeFraction <= 0.0001f ? 1f : Mathf.Clamp(progress / fadeFraction, 0f, 1f);
+				var ghostOpacity = 1f;
 				if (Settings.HalfGhost)
 				{
-					var far = 0.24 * NoteManager.SyncManager.Speed;
-					var near = 0.06 * NoteManager.SyncManager.Speed;
-					var t = far <= near ? 1f : Mathf.Clamp((float)((aheadSeconds - near) / (far - near)), 0f, 1f);
-					fadeOut = 0.2f + 0.8f * Mathf.Pow(t, 1.3f);
+					if (noteTime > 0.5)
+						ghostOpacity = 0.35f;
+					else
+						ghostOpacity = Mathf.Lerp(1f, 0.35f, Mathf.Clamp(((float)noteTime - 0.25f) / 0.25f, 0f, 1f));
 				}
-				var alpha = Mathf.Min(fadeIn, fadeOut) * Settings.NoteOpacity;
-				var color = note.Color;
-				color.a *= alpha;
-				Multimesh.SetInstanceColor(i, color);
+				var opacity = Mathf.Clamp(fadeOpacity * ghostOpacity * Settings.NoteOpacity, 0f, 1f);
+				Multimesh.SetInstanceColor(i, new Color(note.Color, opacity));
 			}
 		}
 
