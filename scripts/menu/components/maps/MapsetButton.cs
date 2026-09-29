@@ -21,7 +21,8 @@ public class MapsetButton : Control
 		list = setButton.GetNode<VBoxContainer>("Maps");
 		origin = list.GetNode<Button>("Map");
 		origin.Visible = false;
-		Collapse();
+		list.Visible = false;
+		RectMinSize = new Vector2(0, 76);
 	}
 	public void MoveIn(float delay = 0.1f)
 	{
@@ -52,8 +53,8 @@ public class MapsetButton : Control
 			mapperText += " · " + rating + " · " + mapInfo.StatusLabel + completed;
 		}
 		setButton.GetNode<Label>("Title/Mapper").Text = mapperText;
-		if (resetButtons)
-			ResetButtons();
+		list.Visible = false;
+		RectMinSize = new Vector2(0, 76);
 	}
 	public void Expand(bool animate = false)
 	{
