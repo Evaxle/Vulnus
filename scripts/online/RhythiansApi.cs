@@ -75,6 +75,7 @@ public static class RhythiansApi
 {
 	private const string BaseUrl = "https://www.rhythians.com/api/rhythkit/";
 	private static readonly string AuthPath = IOPath.Combine(OS.GetUserDataDir(), "rhythians-auth.json");
+	private static readonly string CatalogPath = IOPath.Combine(OS.GetUserDataDir(), "rhythians-catalog.json");
 	private static readonly HttpClient Client = new HttpClient { BaseAddress = new Uri(BaseUrl), Timeout = TimeSpan.FromSeconds(60) };
 	private static readonly object CatalogLock = new object();
 	private static readonly Dictionary<string, RhythiansMapInfo> Catalog = new Dictionary<string, RhythiansMapInfo>(StringComparer.OrdinalIgnoreCase);
@@ -99,6 +100,7 @@ public static class RhythiansApi
 			Token = (string)json["token"];
 			Username = (string)json["username"];
 			InstallationId = (string)json["installationId"];
+			LoadCatalogCache();
 		}
 		catch
 		{
@@ -225,6 +227,8 @@ public static class RhythiansApi
 		{
 			if (File.Exists(AuthPath))
 				File.Delete(AuthPath);
+			if (File.Exists(CatalogPath))
+				File.Delete(CatalogPath);
 		}
 		catch
 		{
@@ -312,6 +316,7 @@ public static class RhythiansApi
 				foreach (var pair in fresh)
 					Catalog[pair.Key] = pair.Value;
 			}
+			SaveCatalogCache();
 			CatalogChanged();
 			return true;
 		}
@@ -546,6 +551,66 @@ public static class RhythiansApi
 			throw new Exception(string.IsNullOrWhiteSpace(error) ? "Rhythians API returned HTTP " + (int)response.StatusCode + "." : error);
 		}
 		return json;
+	}
+
+	private static void LoadCatalogCache()
+	{
+		if (!File.Exists(CatalogPath)) return;
+		try
+		{
+			var array = JArray.Parse(File.ReadAllText(CatalogPath));
+			lock (CatalogLock)
+			{
+				Catalog.Clear();
+				foreach (var token in array)
+				{
+					var map = ParseMap(token as JObject);
+					if (map != null) Catalog[map.Id] = map;
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			GD.PrintErr("Unable to load cached Rhythians catalog: " + e.Message);
+		}
+	}
+
+	private static void SaveCatalogCache()
+	{
+		try
+		{
+			var array = new JArray();
+			lock (CatalogLock)
+			{
+				foreach (var map in Catalog.Values)
+				{
+					array.Add(new JObject
+					{
+						["id"] = map.Id,
+						["title"] = map.Title,
+						["artist"] = map.Artist,
+						["mapper"] = map.Mapper,
+						["imageUrl"] = map.ImageUrl,
+						["rating"] = map.Rating.HasValue ? JToken.FromObject(map.Rating.Value) : JValue.CreateNull(),
+						["length"] = map.LengthSeconds,
+						["noteCount"] = map.NoteCount,
+						["isRanked"] = map.IsRanked,
+						["isLegacy"] = map.IsLegacy,
+						["scoreEligible"] = map.ScoreEligible,
+						["sourceStatus"] = map.SourceStatus,
+						["hasScore"] = map.HasScore,
+						["completion"] = new JObject { ["passed"] = map.Passed },
+						["maxRewards"] = new JObject { ["lock"] = map.Rpl, ["spin"] = map.Rps, ["vr"] = map.Rpvr },
+						["modeScores"] = new JObject { ["lock"] = map.LockScore, ["spin"] = map.SpinScore, ["vr"] = map.VrScore }
+					});
+				}
+			}
+			File.WriteAllText(CatalogPath, array.ToString(Formatting.None));
+		}
+		catch (Exception e)
+		{
+			GD.PrintErr("Unable to cache Rhythians catalog: " + e.Message);
+		}
 	}
 
 	private static void SaveAuth()
