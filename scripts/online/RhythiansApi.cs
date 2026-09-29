@@ -38,6 +38,9 @@ public sealed class RhythiansMapInfo
 	public int Rpl;
 	public int Rps;
 	public int Rpvr;
+	public int LockScore;
+	public int SpinScore;
+	public int VrScore;
 
 	public string StatusLabel => IsLegacy ? "LEGACY" : IsRanked ? "RANKED" : "UNRANKED";
 	public bool Completed => HasScore || Passed;
@@ -81,6 +84,7 @@ public static class RhythiansApi
 	public static string InstallationId { get; private set; }
 	public static string LastError { get; private set; }
 	public static RhythiansScoreResult LastScoreResult { get; private set; }
+	public static bool HasLinkedRhythia { get; private set; }
 	public static bool IsAuthenticated => !string.IsNullOrWhiteSpace(Token);
 	public static Action AccountChanged = () => { };
 	public static Action CatalogChanged = () => { };
@@ -116,7 +120,9 @@ public static class RhythiansApi
 			}
 			Username = result.Value<string>("username") ?? Username;
 			InstallationId = result.Value<string>("installationId") ?? InstallationId;
+			HasLinkedRhythia = result.Value<bool?>("linkedRhythia") == true;
 			SaveAuth();
+			ValidateSession();
 			AccountChanged();
 			return true;
 		}
@@ -213,6 +219,7 @@ public static class RhythiansApi
 		Token = null;
 		Username = null;
 		InstallationId = null;
+		HasLinkedRhythia = false;
 		lock (CatalogLock) Catalog.Clear();
 		try
 		{
@@ -399,6 +406,11 @@ public static class RhythiansApi
 		LastScoreResult = null;
 	}
 
+	public static void ResetScoreResult()
+	{
+		LastScoreResult = null;
+	}
+
 	public static RhythiansScoreResult SubmitScore(string mapId, string clientScoreId, double accuracy, int misses, double speed, string cameraMode, IList<double> missTimes = null)
 	{
 		var scoreResult = new RhythiansScoreResult { Success = false, CameraMode = cameraMode == "spin" ? "spin" : "lock" };
@@ -468,6 +480,7 @@ public static class RhythiansApi
 			return null;
 		var completion = json["completion"] as JObject;
 		var rewards = json["maxRewards"] as JObject;
+		var modeScores = json["modeScores"] as JObject;
 		return new RhythiansMapInfo
 		{
 			Id = id,
@@ -486,7 +499,10 @@ public static class RhythiansApi
 			Passed = completion?.Value<bool?>("passed") == true,
 			Rpl = rewards?.Value<int?>("lock") ?? 0,
 			Rps = rewards?.Value<int?>("spin") ?? 0,
-			Rpvr = rewards?.Value<int?>("vr") ?? 0
+			Rpvr = rewards?.Value<int?>("vr") ?? 0,
+			LockScore = modeScores?.Value<int?>("lock") ?? 0,
+			SpinScore = modeScores?.Value<int?>("spin") ?? 0,
+			VrScore = modeScores?.Value<int?>("vr") ?? 0
 		};
 	}
 
