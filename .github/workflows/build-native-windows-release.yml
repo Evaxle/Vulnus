@@ -34,7 +34,7 @@ jobs:
     timeout-minutes: 20
     env:
       RELEASE_TAG: "v0.2.0-rhythians"
-      OLD_RELEASE_TAG: ""
+      OLD_RELEASE_TAG: "v0.1.1-rhythians"
       GODOT_TEMPLATE_DIR: "3.7.dev1.mono"
     steps:
       - name: Checkout
@@ -142,7 +142,7 @@ jobs:
           if ($LASTEXITCODE -eq 0) {
             gh release upload $env:RELEASE_TAG "dist/Vulnus-Windows-x64.zip" --clobber
           } else {
-            gh release create $env:RELEASE_TAG "dist/Vulnus-Windows-x64.zip" --target "$env:GITHUB_SHA" --title "Vulnus Rhythians Windows v0.2.0" --notes "Playable Windows x64 build with full Rhythians account confirmation, catalog browsing and map downloads, score submission, SSPM importing, and Rhythians progression integration. Exported natively on Windows with Godot 3.7-dev1 Mono."
+            gh release create $env:RELEASE_TAG "dist/Vulnus-Windows-x64.zip" --target "$env:GITHUB_SHA" --title "Vulnus Rhythians Windows v0.2.0" --notes "Major compatibility release: Rhythians website-confirmed login, linked-Rhythia access enforcement, full map catalog downloads, ranked/legacy/completion/reward metadata, RPL/RPS score submission, Full Lock/Parallax/Spin modes, universal AR/AD/fade compatibility, Half Ghost, pause/restart/exit, fixed failure handling, customization and RHS/settings/color/cursor presets. Exported natively on Windows with Godot 3.7-dev1 Mono."
           }
           if ($env:OLD_RELEASE_TAG -and $env:OLD_RELEASE_TAG -ne $env:RELEASE_TAG) {
             gh release delete $env:OLD_RELEASE_TAG --cleanup-tag -y 2>$null
