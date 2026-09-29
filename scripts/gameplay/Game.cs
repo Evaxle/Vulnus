@@ -68,7 +68,12 @@ namespace Gameplay
 		public override void _PhysicsProcess(float delta)
 		{
 			if (Ended) return;
-			if (Input.IsActionJustPressed("pause") || Input.IsActionJustPressed("force_end"))
+			if (Input.IsActionJustPressed("force_end"))
+			{
+				ExitMap();
+				return;
+			}
+			if (Input.IsActionJustPressed("pause"))
 			{
 				TogglePause();
 				return;
