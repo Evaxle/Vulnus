@@ -125,6 +125,7 @@ namespace Gameplay
 				RhythKitBridge.Send("MapCompleted", true, mapId, clientScoreId, accuracy, Score.Misses, SyncManager.Speed, qualified, cameraMode);
 				if (qualified && RhythiansApi.IsAuthenticated)
 				{
+					RhythiansApi.ResetScoreResult();
 					var submittedMissTimes = missTimes.ToArray();
 					Task.Run(() => RhythiansApi.SubmitScore(mapId, clientScoreId, accuracy, Score.Misses, SyncManager.Speed, cameraMode, submittedMissTimes));
 				}
