@@ -35,10 +35,9 @@ namespace Gameplay
 				var ghostOpacity = 1f;
 				if (Settings.HalfGhost)
 				{
-					if (noteTime > 0.5)
-						ghostOpacity = 0.35f;
-					else
-						ghostOpacity = Mathf.Lerp(1f, 0.35f, Mathf.Clamp(((float)noteTime - 0.25f) / 0.25f, 0f, 1f));
+					var speed = Math.Max(0.01f, NoteManager.SyncManager.Speed);
+					var realSecondsToHit = Math.Max(0.0, note.T - NoteManager.SyncManager.NoteTime) / speed;
+					ghostOpacity = Mathf.Clamp(((float)realSecondsToHit - 0.06f) / 0.18f, 0f, 1f);
 				}
 				var opacity = Mathf.Clamp(fadeOpacity * ghostOpacity * Settings.NoteOpacity, 0f, 1f);
 				Multimesh.SetInstanceColor(i, new Color(note.Color, opacity));
