@@ -238,6 +238,7 @@ namespace Compatibility.SSP
             var markersOffset = reader.ReadUInt64();
             reader.ReadUInt64();
             var id = ReadString(reader);
+            if (!string.IsNullOrWhiteSpace(overrideId)) id = overrideId;
             var mapName = ReadString(reader);
             ReadString(reader);
             var mapperCount = reader.ReadUInt16();
