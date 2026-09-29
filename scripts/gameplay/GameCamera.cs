@@ -43,7 +43,7 @@ namespace Gameplay
 					if (material != null)
 					{
 						material.AlbedoColor = Settings.ParseColor(Settings.CursorColor, Colors.White);
-						if (!string.IsNullOrWhiteSpace(Settings.CursorPath) && File.Exists(Settings.CursorPath))
+						if (!string.IsNullOrWhiteSpace(Settings.CursorPath) && System.IO.File.Exists(Settings.CursorPath))
 						{
 							var image = new Image();
 							if (image.Load(Settings.CursorPath) == Error.Ok)
