@@ -26,6 +26,7 @@ namespace Gameplay
 		public bool Ended;
 		public bool CanFail;
 		private bool paused;
+		public bool Paused { get { return paused; } }
 		private CanvasLayer pauseLayer;
 		private List<double> missTimes;
 
@@ -201,7 +202,7 @@ namespace Gameplay
 			Settings.AnyPause = true;
 			Ended = true;
 			SyncManager.AudioPlayer.Stop();
-			RhythKitBridge.Send("MapEnded", true, LoadedMapset == null ? null : LoadedMapset.RhythiansMapId, null, null, null, false, null, Settings.CameraMode == 0 ? "spin" : "lock");
+			RhythKitBridge.Send("MapEnded", true, LoadedMapset == null ? null : LoadedMapset.RhythiansMapId, null, null, null, null, false, Settings.CameraMode == 0 ? "spin" : "lock");
 			Score = null;
 			Global.Instance.GotoScene("res://scenes/MainMenu.tscn");
 		}
