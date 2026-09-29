@@ -55,9 +55,9 @@ public class Options : View
 				if (RhythiansApi.PollDeviceLogin(pendingDeviceCode, out pending))
 				{
 					pendingDeviceCode = null;
-					accountMessage.Text = "Logged in. Syncing Rhythians maps...";
+					accountMessage.Text = "Logged in. Syncing the Rhythians catalog...";
 					accountMessage.Visible = true;
-					mapSyncTask = Task.Run(() => RhythiansApi.SyncMaps(true));
+					mapSyncTask = Task.Run(() => RhythiansApi.SyncMaps(false));
 					UpdateAccountUi();
 				}
 				else if (!pending && !string.IsNullOrWhiteSpace(RhythiansApi.LastError))
@@ -73,7 +73,7 @@ public class Options : View
 		{
 			var success = !mapSyncTask.IsFaulted && mapSyncTask.Result;
 			mapSyncTask = null;
-			accountMessage.Text = success ? "Rhythians maps are synced." : RhythiansApi.LastError ?? "Map sync failed.";
+			accountMessage.Text = success ? "Rhythians catalog is ready. Open Download Maps to install maps." : RhythiansApi.LastError ?? "Catalog sync failed.";
 			accountMessage.Visible = true;
 			UpdateAccountUi();
 		}
@@ -126,7 +126,7 @@ public class Options : View
 		if (RhythiansApi.IsAuthenticated)
 		{
 			accountStatus.Text = "Logged in to Rhythians as " + (RhythiansApi.Username ?? "user") + ".";
-			loginButton.Text = mapSyncTask == null ? "LOG OUT" : "SYNCING MAPS...";
+			loginButton.Text = mapSyncTask == null ? "LOG OUT" : "SYNCING CATALOG...";
 			loginButton.Disabled = mapSyncTask != null;
 			if (codeField != null)
 				codeField.Text = RhythiansApi.Username ?? "";
