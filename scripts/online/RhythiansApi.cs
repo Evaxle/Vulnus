@@ -122,7 +122,6 @@ public static class RhythiansApi
 			InstallationId = result.Value<string>("installationId") ?? InstallationId;
 			HasLinkedRhythia = result.Value<bool?>("linkedRhythia") == true;
 			SaveAuth();
-			ValidateSession();
 			AccountChanged();
 			return true;
 		}
@@ -189,6 +188,7 @@ public static class RhythiansApi
 				return false;
 			}
 			SaveAuth();
+			ValidateSession();
 			AccountChanged();
 			return true;
 		}
@@ -399,11 +399,6 @@ public static class RhythiansApi
 			{
 			}
 		}
-	}
-
-	public static void ResetScoreResult()
-	{
-		LastScoreResult = null;
 	}
 
 	public static void ResetScoreResult()
