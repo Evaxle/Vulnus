@@ -108,7 +108,15 @@ public class RhythiansCatalog : View
 		if (!RhythiansApi.IsAuthenticated)
 		{
 			ClearRows();
-			status.Text = "Log in with Rhythians Account first.";
+			status.Text = "Log in with your Rhythians account first.";
+			previous.Disabled = true;
+			next.Disabled = true;
+			return;
+		}
+		if (!RhythiansApi.HasLinkedRhythia)
+		{
+			ClearRows();
+			status.Text = "Link and verify your Rhythia Steam profile on rhythians.com to unlock the catalog.";
 			previous.Disabled = true;
 			next.Disabled = true;
 			return;
@@ -157,7 +165,7 @@ public class RhythiansCatalog : View
 
 	private void StartLoad(bool reset)
 	{
-		if (!RhythiansApi.IsAuthenticated || loadTask != null || downloadTask != null)
+		if (!RhythiansApi.IsAuthenticated || !RhythiansApi.HasLinkedRhythia || loadTask != null || downloadTask != null)
 			return;
 		if (reset)
 			offset = 0;
