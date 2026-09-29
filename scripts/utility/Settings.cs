@@ -5,6 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.IO.Compression;
+using System.Text;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -171,7 +174,9 @@ public static class Settings
 	public static string[] GetPresetNames()
 	{
 		EnsurePresetDirectories();
-		return Directory.GetFiles(PresetDirectory, "*.json").Select(Path.GetFileNameWithoutExtension).OrderBy(x => x).ToArray();
+		var local = Directory.GetFiles(PresetDirectory, "*.json").Select(Path.GetFileNameWithoutExtension);
+		var rhythia = Directory.GetFiles(PresetDirectory, "*.rhs").Select(Path.GetFileName);
+		return local.Concat(rhythia).OrderBy(x => x).ToArray();
 	}
 
 	public static string[] GetCursorFiles()
@@ -214,6 +219,8 @@ public static class Settings
 	public static bool LoadPreset(string name)
 	{
 		EnsurePresetDirectories();
+		if (name.EndsWith(".rhs", StringComparison.OrdinalIgnoreCase))
+			return ImportRhythiaPreset(Path.Combine(PresetDirectory, Path.GetFileName(name)));
 		var path = Path.Combine(PresetDirectory, SafeName(name) + ".json");
 		if (!File.Exists(path)) return false;
 		try
@@ -227,6 +234,83 @@ public static class Settings
 			GD.PrintErr("Could not load settings preset: " + e.Message);
 			return false;
 		}
+	}
+
+	public static bool ImportRhythiaPreset(string path)
+	{
+		if (!File.Exists(path)) return false;
+		try
+		{
+			var texts = new System.Collections.Generic.List<string>();
+			var bytes = File.ReadAllBytes(path);
+			if (bytes.Length >= 2 && bytes[0] == 0x50 && bytes[1] == 0x4B)
+			{
+				using (var memory = new MemoryStream(bytes))
+				using (var archive = new ZipArchive(memory, ZipArchiveMode.Read))
+				{
+					foreach (var entry in archive.Entries)
+					{
+						if (entry.Length <= 0 || entry.Length > 8 * 1024 * 1024) continue;
+						using (var stream = entry.Open())
+						using (var reader = new StreamReader(stream, Encoding.UTF8, true))
+							texts.Add(reader.ReadToEnd());
+					}
+				}
+			}
+			else
+			{
+				texts.Add(Encoding.UTF8.GetString(bytes));
+			}
+
+			var combined = string.Join("\n", texts);
+			var ar = FindNumber(combined, new[] { "ApproachRate", "approach_rate", "Approach Rate", "AR" });
+			var ad = FindNumber(combined, new[] { "SpawnDistance", "spawn_distance", "Spawn Distance", "ApproachDistance", "approach_distance", "Approach Distance", "AD" });
+			var fade = FindNumber(combined, new[] { "FadeLength", "fade_length", "Fade Length" });
+			var sensitivity = FindNumber(combined, new[] { "Sensitivity", "sensitivity" });
+			var parallax = FindNumber(combined, new[] { "CameraParallax", "Parallax", "parallax" });
+			var fieldOfView = FindNumber(combined, new[] { "FoV", "FOV", "FieldOfView" });
+			var noteSize = FindNumber(combined, new[] { "NoteSize", "note_size", "HitObjectSize" });
+			var opacity = FindNumber(combined, new[] { "NoteOpacity", "note_opacity", "Note Opacity" });
+			var cScale = FindNumber(combined, new[] { "CursorScale", "cursor_scale", "CursorSize", "cursor_size" });
+			var colors = Regex.Matches(combined, @"#?([0-9a-fA-F]{6})(?:[0-9a-fA-F]{2})?");
+			if (ar.HasValue) ApproachRate = ar.Value * 2f;
+			if (ad.HasValue) ApproachDistance = ad.Value * 2f;
+			if (ar.HasValue || ad.HasValue) ApproachMode = 1;
+			if (fade.HasValue) FadeLength = fade.Value <= 1f ? fade.Value * 100f : fade.Value;
+			if (sensitivity.HasValue) MouseSensitivity = sensitivity.Value;
+			if (parallax.HasValue) ParallaxAmount = parallax.Value;
+			if (fieldOfView.HasValue) FieldOfView = fieldOfView.Value;
+			if (noteSize.HasValue) NoteScale = noteSize.Value;
+			if (opacity.HasValue) NoteOpacity = opacity.Value > 1f ? opacity.Value / 100f : opacity.Value;
+			if (cScale.HasValue) CursorScale = cScale.Value;
+			if (colors.Count >= 2)
+			{
+				NoteColorA = "#" + colors[0].Groups[1].Value;
+				NoteColorB = "#" + colors[1].Groups[1].Value;
+			}
+			var cursorMatch = Regex.Match(combined, @"(?i)(?:CursorColor|cursor_color|CursorColour)\s*[:=]\s*[\""']?#?([0-9a-f]{6})");
+			if (cursorMatch.Success) CursorColor = "#" + cursorMatch.Groups[1].Value;
+			UpdateSettings();
+			return ar.HasValue || ad.HasValue || sensitivity.HasValue || parallax.HasValue || fieldOfView.HasValue || colors.Count >= 2;
+		}
+		catch (Exception e)
+		{
+			GD.PrintErr("Could not import Rhythia RHS preset: " + e.Message);
+			return false;
+		}
+	}
+
+	private static float? FindNumber(string text, string[] names)
+	{
+		foreach (var name in names)
+		{
+			var pattern = @"(?im)[\""']?" + Regex.Escape(name) + @"[\""']?\s*[:=]\s*[\""']?(-?\d+(?:\.\d+)?)";
+			var match = Regex.Match(text, pattern);
+			float value;
+			if (match.Success && float.TryParse(match.Groups[1].Value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out value))
+				return value;
+		}
+		return null;
 	}
 
 	public static bool ApplyColorPreset(string path)
