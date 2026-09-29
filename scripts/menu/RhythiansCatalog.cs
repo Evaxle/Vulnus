@@ -99,8 +99,6 @@ public class RhythiansCatalog : View
 
 		status = new Label();
 		status.SizeFlagsHorizontal = 3;
-		status.Align = Label.AlignEnum.Right;
-		status.Valign = Label.VAlign.Center;
 		footer.AddChild(status);
 	}
 
