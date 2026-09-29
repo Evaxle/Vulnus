@@ -6,7 +6,6 @@ namespace Gameplay
 	public class NoteRenderer : MultiMeshInstance
 	{
 		public NoteManager NoteManager;
-
 		public Note[] Notes = new Note[0];
 
 		public override void _Ready()
@@ -18,23 +17,40 @@ namespace Gameplay
 			Multimesh.ColorFormat = MultiMesh.ColorFormatEnum.Color8bit;
 			Multimesh.CustomDataFormat = MultiMesh.CustomDataFormatEnum.None;
 		}
+
 		public override void _Process(float delta)
 		{
+			var fadeFraction = Mathf.Clamp(Settings.FadeLength / 100f, 0f, 1f);
 			for (int i = 0; i < Notes.Length; i++)
 			{
 				var note = Notes[i];
 				var noteTime = note.CalculateTime(NoteManager.SyncManager.NoteTime, NoteManager.ApproachTime);
 				var noteDistance = noteTime * Settings.ApproachDistance;
-				Multimesh.SetInstanceTransform(i, new Transform(Basis.Identity, new Vector3(note.X, note.Y, (float)-noteDistance)));
-				Multimesh.SetInstanceColor(i, new Color(note.Color, Mathf.Min(1f, (float)(1f - noteTime) * 4f)));
+				var scale = Settings.NoteScale;
+				var basis = Basis.Identity.Scaled(new Vector3(scale, scale, scale));
+				Multimesh.SetInstanceTransform(i, new Transform(basis, new Vector3(note.X, note.Y, (float)-noteDistance)));
+
+				var progress = Mathf.Clamp(1f - (float)noteTime, 0f, 1f);
+				var fadeOpacity = fadeFraction <= 0.0001f ? 1f : Mathf.Clamp(progress / fadeFraction, 0f, 1f);
+				var ghostOpacity = 1f;
+				if (Settings.HalfGhost)
+				{
+					var speed = Math.Max(0.01f, NoteManager.SyncManager.Speed);
+					var realSecondsToHit = Math.Max(0.0, note.T - NoteManager.SyncManager.NoteTime) / speed;
+					ghostOpacity = Mathf.Clamp(((float)realSecondsToHit - 0.06f) / 0.18f, 0f, 1f);
+				}
+				var opacity = Mathf.Clamp(fadeOpacity * ghostOpacity * Settings.NoteOpacity, 0f, 1f);
+				Multimesh.SetInstanceColor(i, new Color(note.Color, opacity));
 			}
 		}
+
 		public void ManualUpdate()
 		{
 			if (Notes.Length > Multimesh.InstanceCount)
 				Multimesh.InstanceCount = Notes.Length;
 			Multimesh.VisibleInstanceCount = Notes.Length;
 		}
+
 		public void SetNotes(Note[] notes)
 		{
 			Notes = notes;

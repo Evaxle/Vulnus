@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=2]
+[gd_scene load_steps=54 format=2]
 
 [ext_resource path="res://assets/fonts/SourceSansPro/SourceSansPro-Semibold.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://assets/images/play.png" type="Texture" id=2]
@@ -19,6 +19,7 @@
 [ext_resource path="res://assets/shaders/mask.gdshader" type="Shader" id=17]
 [ext_resource path="res://assets/fonts/SourceSansPro/SourceSansPro-Regular.ttf" type="DynamicFontData" id=18]
 [ext_resource path="res://assets/images/rhythians-logo.svg" type="Texture" id=19]
+[ext_resource path="res://scripts/menu/RhythiansCatalog.cs" type="Script" id=20]
 
 [sub_resource type="StyleBoxFlat" id=25]
 bg_color = Color( 0.141176, 0.141176, 0.141176, 1 )
@@ -409,7 +410,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 56.0
 custom_fonts/font = SubResource( 1 )
-text = "Singleplayer"
+text = "Play"
 valign = 1
 
 [node name="Downloads" type="Button" parent="ViewContainer/MainMenu/Sidebar/Buttons"]
@@ -439,7 +440,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 56.0
 custom_fonts/font = SubResource( 1 )
-text = "Download Maps"
+text = "Maps Catalog"
 valign = 1
 
 [node name="Options" type="Button" parent="ViewContainer/MainMenu/Sidebar/Buttons"]
@@ -841,6 +842,11 @@ text = "SAVE"
 [node name="Tween" type="Tween" parent="ViewContainer/Singleplayer/ModSelect"]
 
 [node name="Tween" type="Tween" parent="ViewContainer/Singleplayer"]
+
+[node name="RhythiansCatalog" type="Control" parent="ViewContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 20 )
 
 [node name="Results" type="Control" parent="ViewContainer"]
 visible = false

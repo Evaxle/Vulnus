@@ -23,7 +23,7 @@ namespace Gameplay.Mods
 			if (ReferenceEquals(this, other)) return true;
 			return GetType() == other.GetType();
 		}
-		public new string ToString()
+		public override string ToString()
 		{
 			return Acronym;
 		}

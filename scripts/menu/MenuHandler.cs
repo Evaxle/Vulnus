@@ -9,7 +9,7 @@ public class MenuHandler : Control
 	public override void _Ready()
 	{
 		var viewContainer = GetNode<Control>("ViewContainer");
-		View[] views = { viewContainer.GetNode<View>("MainMenu"), viewContainer.GetNode<View>("Singleplayer"), viewContainer.GetNode<View>("Results") };
+		View[] views = { viewContainer.GetNode<View>("MainMenu"), viewContainer.GetNode<View>("Singleplayer"), viewContainer.GetNode<View>("Results"), viewContainer.GetNode<View>("RhythiansCatalog") };
 		foreach (View view in views)
 		{
 			view.Visible = false;

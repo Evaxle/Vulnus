@@ -89,14 +89,13 @@ public class MapList : Control
 	}
 	private void btnPressed(MapsetButton btn)
 	{
-		if (SelectedMapset == btn.Mapset)
+		if (btn == null || btn.Mapset == null || btn.Mapset.Difficulties.Count == 0)
 			return;
-		if (SelectedMapset != null && mapButtons.ContainsKey(SelectedMapset))
-			mapButtons[SelectedMapset].Collapse(true);
-		btn.ManualUpdate(true);
-		btn.Expand(true);
 		SelectedMapset = btn.Mapset;
+		SelectedMap = btn.Mapset.Difficulties[0];
+		btn.ManualUpdate(false);
 		MapsetSelected(SelectedMapset);
+		MapSelected(SelectedMap);
 	}
 	public void SearchChanged(string search)
 	{
@@ -217,8 +216,6 @@ public class MapList : Control
 			mapButtons[set].Mapset = set;
 			mapButtons[set].ManualUpdate(true);
 			mapButtons[set].MoveIn((creationIndex + 1) / 20f);
-			if (SelectedMapset == set)
-				mapButtons[set].Expand();
 			list.MoveChild(mapButtons[set], hierarchyIndex);
 			hierarchyIndex++;
 		}

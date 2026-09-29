@@ -15,7 +15,7 @@ namespace Gameplay.Mods
 				this.Remove(other);
 			base.Add(mod);
 		}
-		public new string ToString()
+		public override string ToString()
 		{
 			return Count == 0 ? "None" : string.Join(", ", this);
 		}

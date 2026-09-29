@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.IO;
 
 namespace Gameplay
 {
@@ -20,6 +21,7 @@ namespace Gameplay
 			CursorPosition = new Vector2();
 			ClampedCursorPosition = new Vector2();
 			Input.MouseMode = Input.MouseModeEnum.Captured;
+			Fov = Settings.FieldOfView;
 			UpdateCameraTransform();
 		}
 
@@ -28,18 +30,49 @@ namespace Gameplay
 			Input.MouseMode = Input.MouseModeEnum.Visible;
 		}
 
+		public void ApplyVisualSettings()
+		{
+			Fov = Settings.FieldOfView;
+			if (Cursor != null)
+			{
+				Cursor.Scale = Vector3.One * Settings.CursorScale;
+				var mesh = Cursor as MeshInstance;
+				if (mesh != null)
+				{
+					var material = mesh.GetSurfaceMaterial(0) as SpatialMaterial;
+					if (material != null)
+					{
+						material.AlbedoColor = Settings.ParseColor(Settings.CursorColor, Colors.White);
+						if (!string.IsNullOrWhiteSpace(Settings.CursorPath) && System.IO.File.Exists(Settings.CursorPath))
+						{
+							var image = new Image();
+							if (image.Load(Settings.CursorPath) == Error.Ok)
+							{
+								var texture = new ImageTexture();
+								texture.CreateFromImage(image);
+								material.AlbedoTexture = texture;
+							}
+						}
+					}
+				}
+			}
+			if (GhostCursor != null)
+				GhostCursor.Scale = Vector3.One * Settings.CursorScale;
+			UpdateCameraTransform();
+		}
+
 		public override void _Input(InputEvent @event)
 		{
 			if (!(@event is InputEventMouseMotion))
 				return;
 
 			var input = (InputEventMouseMotion)@event;
-			var relative = input.Relative * Settings.MouseSensitivity / 4f;
 
 			if (Settings.CameraMode == 0)
 			{
-				Yaw = Mathf.Wrap(Yaw - relative.x, -180f, 180f);
-				Pitch = Mathf.Clamp(Pitch - relative.y, -90f, 90f);
+				var spinRelative = input.Relative * Settings.MouseSensitivity * 0.2f;
+				Yaw = Mathf.Wrap(Yaw - spinRelative.x, -180f, 180f);
+				Pitch = Mathf.Clamp(Pitch - spinRelative.y, -90f, 90f);
 				Rotation = new Vector3(Mathf.Deg2Rad(Pitch), Mathf.Deg2Rad(Yaw), 0);
 				UpdateCameraTransform();
 				var position = new Vector2(Translation.x, Translation.y);
@@ -52,7 +85,7 @@ namespace Gameplay
 				Yaw = 0f;
 				Pitch = 0f;
 				Rotation = Vector3.Zero;
-				CursorPosition += new Vector2(relative.x, -relative.y) * 0.1675f;
+				CursorPosition += new Vector2(input.Relative.x, -input.Relative.y) * (0.036f * Settings.MouseSensitivity);
 			}
 
 			ClampedCursorPosition = new Vector2(
@@ -84,9 +117,10 @@ namespace Gameplay
 		{
 			var basePosition = new Vector3(0, 0, 7) + Transform.basis.z / 2f;
 			if (Settings.CameraMode == 2)
-				basePosition += new Vector3(ClampedCursorPosition.x, ClampedCursorPosition.y, 0) / 4f;
-			else if (Settings.CameraMode == 0)
-				basePosition += new Vector3(ClampedCursorPosition.x, ClampedCursorPosition.y, 0) / 4f;
+			{
+				var factor = Settings.ParallaxAmount / 40f;
+				basePosition += new Vector3(ClampedCursorPosition.x, ClampedCursorPosition.y, 0) * factor;
+			}
 			Translation = basePosition;
 		}
 	}

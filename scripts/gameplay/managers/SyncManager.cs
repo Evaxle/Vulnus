@@ -35,6 +35,8 @@ namespace Gameplay
 		}
 		public override void _Process(float delta)
 		{
+			if (Game.Paused)
+				return;
 			if (Game.Ended)
 				return;
 			if (!SongPlaying)
