@@ -1,6 +1,9 @@
 using Godot;
 using System;
 using System.IO;
+using IOFile = System.IO.File;
+using IODirectory = System.IO.Directory;
+using IOPath = System.IO.Path;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -174,29 +177,29 @@ public static class Settings
 	public static string[] GetPresetNames()
 	{
 		EnsurePresetDirectories();
-		var local = Directory.GetFiles(PresetDirectory, "*.json").Select(Path.GetFileNameWithoutExtension);
-		var rhythia = Directory.GetFiles(PresetDirectory, "*.rhs").Select(Path.GetFileName);
+		var local = IODirectory.GetFiles(PresetDirectory, "*.json").Select(IOPath.GetFileNameWithoutExtension);
+		var rhythia = IODirectory.GetFiles(PresetDirectory, "*.rhs").Select(IOPath.GetFileName);
 		return local.Concat(rhythia).OrderBy(x => x).ToArray();
 	}
 
 	public static string[] GetCursorFiles()
 	{
 		EnsurePresetDirectories();
-		return Directory.GetFiles(CursorDirectory).Where(path =>
+		return IODirectory.GetFiles(CursorDirectory).Where(path =>
 		{
-			var ext = Path.GetExtension(path).ToLowerInvariant();
+			var ext = IOPath.GetExtension(path).ToLowerInvariant();
 			return ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".webp";
-		}).OrderBy(path => Path.GetFileName(path)).ToArray();
+		}).OrderBy(path => IOPath.GetFileName(path)).ToArray();
 	}
 
 	public static string[] GetColorPresetFiles()
 	{
 		EnsurePresetDirectories();
-		return Directory.GetFiles(ColorDirectory).Where(path =>
+		return IODirectory.GetFiles(ColorDirectory).Where(path =>
 		{
-			var ext = Path.GetExtension(path).ToLowerInvariant();
+			var ext = IOPath.GetExtension(path).ToLowerInvariant();
 			return ext == ".txt" || ext == ".json";
-		}).OrderBy(path => Path.GetFileName(path)).ToArray();
+		}).OrderBy(path => IOPath.GetFileName(path)).ToArray();
 	}
 
 	public static bool SavePreset(string name)
@@ -206,7 +209,7 @@ public static class Settings
 		if (string.IsNullOrWhiteSpace(name)) return false;
 		try
 		{
-			File.WriteAllText(Path.Combine(PresetDirectory, name + ".json"), BuildPresetJson().ToString(Formatting.Indented));
+			IOFile.WriteAllText(IOPath.Combine(PresetDirectory, name + ".json"), BuildPresetJson().ToString(Formatting.Indented));
 			return true;
 		}
 		catch (Exception e)
@@ -220,12 +223,12 @@ public static class Settings
 	{
 		EnsurePresetDirectories();
 		if (name.EndsWith(".rhs", StringComparison.OrdinalIgnoreCase))
-			return ImportRhythiaPreset(Path.Combine(PresetDirectory, Path.GetFileName(name)));
-		var path = Path.Combine(PresetDirectory, SafeName(name) + ".json");
-		if (!File.Exists(path)) return false;
+			return ImportRhythiaPreset(IOPath.Combine(PresetDirectory, IOPath.GetFileName(name)));
+		var path = IOPath.Combine(PresetDirectory, SafeName(name) + ".json");
+		if (!IOFile.Exists(path)) return false;
 		try
 		{
-			ApplyPresetJson(JObject.Parse(File.ReadAllText(path)));
+			ApplyPresetJson(JObject.Parse(IOFile.ReadAllText(path)));
 			UpdateSettings();
 			return true;
 		}
@@ -238,11 +241,11 @@ public static class Settings
 
 	public static bool ImportRhythiaPreset(string path)
 	{
-		if (!File.Exists(path)) return false;
+		if (!IOFile.Exists(path)) return false;
 		try
 		{
 			var texts = new System.Collections.Generic.List<string>();
-			var bytes = File.ReadAllBytes(path);
+			var bytes = IOFile.ReadAllBytes(path);
 			if (bytes.Length >= 2 && bytes[0] == 0x50 && bytes[1] == 0x4B)
 			{
 				using (var memory = new MemoryStream(bytes))
@@ -317,7 +320,7 @@ public static class Settings
 	{
 		try
 		{
-			var text = File.ReadAllText(path);
+			var text = IOFile.ReadAllText(path);
 			var matches = System.Text.RegularExpressions.Regex.Matches(text, "#?[0-9a-fA-F]{6,8}");
 			if (matches.Count < 2) return false;
 			NoteColorA = "#" + matches[0].Value.TrimStart('#').Substring(0, 6);
@@ -372,15 +375,15 @@ public static class Settings
 
 	private static void EnsurePresetDirectories()
 	{
-		Directory.CreateDirectory(PresetDirectory);
-		Directory.CreateDirectory(CursorDirectory);
-		Directory.CreateDirectory(ColorDirectory);
+		IODirectory.CreateDirectory(PresetDirectory);
+		IODirectory.CreateDirectory(CursorDirectory);
+		IODirectory.CreateDirectory(ColorDirectory);
 	}
 
 	private static string SafeName(string value)
 	{
 		if (string.IsNullOrWhiteSpace(value)) return "";
-		foreach (var invalid in Path.GetInvalidFileNameChars()) value = value.Replace(invalid, '_');
+		foreach (var invalid in IOPath.GetInvalidFileNameChars()) value = value.Replace(invalid, '_');
 		return value.Trim();
 	}
 
