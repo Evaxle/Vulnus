@@ -16,6 +16,7 @@ public class MapDetails : View
 	private Control loading;
 	private Control modPanel;
 	private AudioStreamPlayer musicPreview;
+	private Label extraInfo;
 	public override void _Ready()
 	{
 		mapList = GetParent().GetNode<MapList>("MapList");
@@ -26,6 +27,15 @@ public class MapDetails : View
 		mapDetails = details.GetNode<Control>("AspectRatioContainer/Map");
 		loading = GetNode<Control>("Loading");
 		musicPreview = GetNode<AudioStreamPlayer>("MusicPreview");
+		extraInfo = new Label();
+		extraInfo.Name = "ExtraInfo";
+		extraInfo.AnchorRight = 1f;
+		extraInfo.MarginLeft = 32f;
+		extraInfo.MarginTop = 270f;
+		extraInfo.MarginRight = -32f;
+		extraInfo.MarginBottom = 390f;
+		extraInfo.Autowrap = true;
+		details.AddChild(extraInfo);
 
 		details.GetNode<Button>("Play").Connect("pressed", this, nameof(PlayMap));
 
@@ -71,6 +81,7 @@ public class MapDetails : View
 				difficultyText += " · COMPLETED";
 		}
 		mapDetails.GetNode<Label>("Difficulty").Text = difficultyText;
+		UpdateExtraInfo(mapInfo);
 		musicPreview.Stream = currentMap.LoadAudio();
 		musicPreview.Play(musicPreview.Stream.GetLength() / 3f);
 		loadingMap = Task.Run(loadMap);
@@ -79,10 +90,41 @@ public class MapDetails : View
 	{
 		var map = currentDifficulty;
 		Error loaded = map.Load();
+		CallDeferred(nameof(RefreshExtraInfo));
 		await Task.Delay(TimeSpan.FromSeconds(1));
 		if (!map.Playable || loaded != Error.Ok)
 			SetActive(false);
 	}
+	private void RefreshExtraInfo()
+	{
+		UpdateExtraInfo(RhythiansApi.GetMap(currentMap == null ? null : currentMap.RhythiansMapId));
+	}
+
+	private void UpdateExtraInfo(RhythiansMapInfo mapInfo)
+	{
+		if (extraInfo == null || currentMap == null || currentDifficulty == null)
+			return;
+		var notes = mapInfo != null && mapInfo.NoteCount > 0
+			? mapInfo.NoteCount
+			: currentDifficulty.Data != null && currentDifficulty.Data.Notes != null ? currentDifficulty.Data.Notes.Count : 0;
+		var length = mapInfo != null && mapInfo.LengthSeconds > 0 ? mapInfo.LengthSeconds + "s" : "local audio";
+		var mods = Gameplay.Game.Mods == null ? "None" : Gameplay.Game.Mods.ToString();
+		var lines = "Notes: " + notes + "  •  Length: " + length + "  •  Mods: " + mods;
+		if (mapInfo != null)
+		{
+			lines += "\nRhythians: " + mapInfo.StatusLabel;
+			if (mapInfo.Rating.HasValue) lines += "  •  Rating " + mapInfo.Rating.Value.ToString("0.00");
+			if (mapInfo.Completed) lines += "  •  Completed";
+			if (mapInfo.IsRanked)
+			{
+				lines += "\nRPL " + (mapInfo.LockScore > 0 ? mapInfo.LockScore + " earned" : mapInfo.Rpl + " available");
+				lines += "  •  RPS " + (mapInfo.SpinScore > 0 ? mapInfo.SpinScore + " earned" : mapInfo.Rps + " available");
+				lines += "  •  RPVR " + (mapInfo.VrScore > 0 ? mapInfo.VrScore + " earned" : mapInfo.Rpvr + " available");
+			}
+		}
+		extraInfo.Text = lines;
+	}
+
 	private float circleSpin = 0f;
 	public override void _Process(float delta)
 	{
