@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Content.Beatmaps;
@@ -24,6 +25,7 @@ namespace Gameplay
 		public HUDManager HUDManager;
 		public bool Ended;
 		public bool CanFail;
+		private List<double> missTimes;
 
 		public override void _Ready()
 		{
@@ -35,6 +37,7 @@ namespace Gameplay
 			SyncManager = GetNode<SyncManager>("SyncManager");
 			HUDManager = GetNode<HUDManager>("HUD");
 			Score = new Score();
+			missTimes = new List<double>();
 			CanFail = false;
 			Ended = false;
 			Camera.Cursor = Cursor;
@@ -101,6 +104,7 @@ namespace Gameplay
 			Score.Multiplier = Mathf.Max(1, Score.Multiplier - 1);
 			Score.Combo = 0;
 			Score.Misses += 1;
+			missTimes.Add(Math.Max(0, note.T * 1000.0));
 			Score.Total += 1;
 			if (!Score.Failed) Score.Health = Math.Max(0, Score.Health - 2);
 			HUDManager.ManualUpdate(Score);
@@ -120,7 +124,10 @@ namespace Gameplay
 				var qualified = !Score.Failed;
 				RhythKitBridge.Send("MapCompleted", true, mapId, clientScoreId, accuracy, Score.Misses, SyncManager.Speed, qualified, cameraMode);
 				if (qualified && RhythiansApi.IsAuthenticated)
-					Task.Run(() => RhythiansApi.SubmitScore(mapId, clientScoreId, accuracy, Score.Misses, SyncManager.Speed, cameraMode));
+				{
+					var submittedMissTimes = missTimes.ToArray();
+					Task.Run(() => RhythiansApi.SubmitScore(mapId, clientScoreId, accuracy, Score.Misses, SyncManager.Speed, cameraMode, submittedMissTimes));
+				}
 			}
 			else
 			{
